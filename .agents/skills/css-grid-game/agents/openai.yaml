@@ -1,0 +1,4 @@
+interface:
+  display_name: "CSS Grid Game"
+  short_description: "Build and verify the Sky Dock CSS Grid learning game"
+  default_prompt: "Use $css-grid-game to improve the game while preserving its teaching behavior and visual identity."
