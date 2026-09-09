@@ -2,97 +2,108 @@
 
 ## Now
 
-Nothing in flight. The editor and responsive play-screen pass from `TODO.md` is implemented; the
-only open item is human verification in a real browser, which this environment cannot run
-(no browser is installable: the Playwright CDN and the Debian mirrors are both unreachable).
+Nothing in flight. The verification pass, the unlock/deep-link feature, the namespaced storage
+key, the vite config cleanup, and the in-repo test suite are all landed; see Done.
 
 ## Next
 
-- Manual pass in a real browser at 1366x768, 1024x768, 768x1024, 390x844, and 360x800, plus 200%
-  zoom, keyboard-only use, and a touch device. The layout rules are written for these cases but
-  have only been checked structurally (see Done).
-- `dist/index.html` is a single 2.9 MB file because `vite-plugin-singlefile` inlines the five art
-  plates as base64. If that is too heavy to host, drop the plugin or move the art back to
-  `public/` and serve `dist/` as a directory.
+Nothing queued. `TODO.md` holds the remaining ideas (storage origin, self-hosted fonts) and the
+one honest residual: the layout audit ran in an emulated browser, not on physical devices.
 
 ## Done
 
-- **Production build fixed.** The five art plates moved from `public/images/` to `src/assets/`, so
-  `src/assets/art.ts` imports resolve through Vite. `npm run build` now completes
-  (`dist/index.html`, 2,904 kB) and `npx tsc --noEmit` is clean.
-- **CodeMirror 6 editor.** `src/components/CssEditor.tsx` replaced the textarea-plus-highlight-overlay
-  with a real editor: line numbers, CSS syntax highlighting, bracket matching, automatic closing
-  brackets, Tab/Shift-Tab indent and outdent, undo/redo, visible focus ring and selection, and
-  Mod+Enter to check. The `value` / `onChange` / `onRun` contract is unchanged, so drafts and level
-  checks work as before. Escape blurs the editor so keyboard-only players are not trapped by Tab.
-  The input font is 16px at <=640px to stop iOS Safari zooming.
-- **Objectives and hints rewritten** for all 76 berths. Objectives describe the visible result;
-  only berths that mandate a tool (`requireCSS`) name it, and never with values. Hints are now
-  nudge → tool → syntax shape.
-- **"Useful tool" reveal** under the goal names the properties the reference solution adds to the
-  starter CSS (`usefulToolsForLevel` in `src/engine/level-tools.ts`). Derived, so it cannot drift.
-- **Cheatsheet became the Harbor glossary**: `src/data/harbor-glossary.ts` (22 entries, term +
-  plain-language definition + example + when to use it, unlocked by shift) and
-  `src/components/HarborGlossary.tsx` (search box, live count, empty state). No second reference
-  screen was added.
-- **Dock previews stopped being cropped.** The board is `min(100%, 360px)` wide instead of a fixed
-  360px, and the board height became a minimum so an implicit ghost deck grows the board instead of
-  being clipped by `overflow: hidden`. Both docks always stay mounted at the same width — validation
-  measures the goal dock even when it is the hidden one — and the hidden dock uses
-  `visibility: hidden` in the same grid cell, never `display: none`.
-- **Pane behaviour:** side by side on wide screens, auto-stacked when the stage is too narrow for
-  two readable docks, one at a time on phones with an Expand overlay (680px board, Yours/Goal
-  switch). An explicit Yours/Goal/Both choice survives a viewport change; the default follows it.
-- **Header and Check dock reachability:** the five-control header wraps instead of crushing the
-  title, controls are >=2.5rem tall, and on narrow screens the editor height is capped with
-  `clamp()` and the action row is sticky so Check dock stays on screen while editing.
-- `vite.config.ts` pins host/port and allows the `*.e2b.app` preview host.
+- **Play screen verified in a real browser — the pass that was previously blocked.** The
+  Playwright CDN and Debian mirrors were unreachable when this was last attempted, but the npm
+  registry is not, so the audit ran on `@sparticuz/chromium` (a Chromium binary shipped as an
+  npm package) driven by playwright-core. Checklist from `TODO.md`, all green on dev server and
+  production `dist/`, at 1366x768, 1024x768, 768x1024, 390x844, 360x800, and 683x384@2x (200%
+  zoom emulation):
+  - no horizontal document overflow at any viewport; both dock previews stay inside the
+    viewport and uncropped; dock labels render at full size (ellipsis is the designed
+    degradation and is applied per label);
+  - the five-control header wraps without crushing the level title on short laptop screens;
+  - Check dock stays reachable while the editor has focus on phone viewports (sticky action
+    row confirmed in screenshots at 768x1024 and 390x844);
+  - keyboard-only: Tab reaches Chart, berth select, Glossary, Lesson, pane toggles, editor,
+    and every editor action; focus indication present at every stop; Escape leaves the editor;
+    Mod+Enter runs a check from anywhere (verified inside the editor);
+  - touch emulation: tapping focuses the editor, caret usable (`user-select` intact),
+    `width=device-width` meta present, editor input font 16px at <=640px so iOS Safari would
+    not zoom the page;
+  - full gameplay loop in a real layout engine: starter CSS correctly fails the c1-01 check,
+    pasted/typed solution CSS passes, verdict modal opens, progress records;
+  - `?unlock=all` unseals all 10 shifts on the chart in the real browser; `?level=c10-08`
+    deep-link lands on the finale.
+- **Two real bugs found and fixed by the audit** (both invisible to jsdom, which has no layout
+  engine and no real event loop interleaving):
+  - `GridPreview`'s ResizeObserver callback called `setTracks` with a fresh object on every
+    delivery even when the measurement was unchanged; under typing-driven layout churn the
+    RO -> setState -> render -> RO cycle never converged and React threw
+    `Maximum update depth exceeded`. The callback is now idempotent (`sameTracks` guard).
+  - `CssEditor` reported document changes synchronously from inside CodeMirror's
+    MutationObserver flush. During fast typing that flush interleaves with React's concurrent
+    work loop, and the per-keystroke `setState` chain nested until React threw the same error
+    (reproduced ~25% of stress runs, always with the update listener on the stack). Reports are
+    now coalesced and deferred to a macrotask — clean stack, newest document wins, and any
+    external change landing mid-burst is respected.
+  - `CssEditor`'s external-value sync also got a sequencing guard: a lagging commit of a value
+    the editor itself emitted can never revert newer in-flight typing (the old code compared
+    strings and could loop or revert), while external values (Reset, level switch, draft
+    restore) still apply synchronously, including re-applying a previously-emitted draft when
+    the parent asks for it.
+  - Regression tests for all three are in the vitest suite; a 20-iteration browser stress run
+    of the previously-failing sequence is clean.
+- **Unlock-all and berth deep-links.** `?unlock=all` unseals every shift (persisted; survives
+  reload without the param and survives "New posting"), `?level=<id>` opens any berth and
+  raises the unlock to its shift. Unknown ids fall back to the title screen. Implemented in
+  `App.tsx` (`bootFromQuery`), covered by app-level tests.
+- **Progress storage namespaced per deployment** (`src/store/progress.ts`): the key is now
+  `skydock-progress-v1:<BASE_URL>`, so production, each pr-preview, and dev each get their own
+  save instead of sharing one origin-wide blob. Existing saves migrate transparently from the
+  legacy bare key, which is never written again.
+- **Sandbox artifacts removed from the tracked vite config.** `host: "0.0.0.0"` and
+  `allowedHosts: [".e2b.app"]` moved out of `vite.config.ts` into a gitignored
+  `vite.config.sandbox.ts` (merged via `SKYDOCK_SANDBOX=1` script wrappers). Tracked config is
+  deployable as-is; the preview environment keeps its overrides.
+- **In-repo test suite: vitest + jsdom + Testing Library, 45 tests, wired into CI**
+  (`npm test`, a step in `verify-pull-request.yml`). The previously-external UI smoke checks
+  now live in the repo: level/glossary data integrity, progress store (round-trip, migration,
+  namespacing, corruption fallback), editor lifecycle (init, level switch, Reset, draft
+  persistence, the typing-race guards), Check dock flow (requireCSS failure via fail list,
+  solution pass, badge + unlock on chapter completion), hint ladder, useful-tool reveal,
+  glossary search/sealing/close, pane defaults at wide and phone widths, explicit
+  Yours/Goal/Both override, expand overlay, overlay toggles, and the title -> map -> play flow
+  including every query-override path. `window.matchMedia`, ResizeObserver, and Range geometry
+  are stubbed in `src/test/setup.ts`; the viewport is switchable per test.
+- **Production build re-verified:** `npx tsc --noEmit` clean, `npm run build` produces
+  `dist/index.html` (2,906 kB; 1,879 kB gzipped), and the full browser audit passes against the
+  built artifact served by `vite preview`.
 
 ## Decisions
 
-- **Art is imported from `src/assets`, not referenced from `public/`.** The single-file build is the
-  point of `vite-plugin-singlefile`, and inlining keeps `dist/index.html` self-contained. Cost: a
-  2.9 MB HTML file.
-- **Hidden docks stay in the layout.** Validation compares player and goal rectangles, so the
-  off-screen dock must be laid out at the same width. `visibility: hidden` in a shared grid cell
-  gives that without a `display: none` measurement hole and without the old `left: -80rem` hack.
-- **The useful-tool list is derived, not authored.** Duplicating the tool name per level would be a
-  second source of truth that drifts the first time a solution changes.
-- **Fixed dimensions stay in objectives.** "Two 72px berths" is a visible measurement the player
-  cannot infer from the goal dock; naming a property or value they must type is the thing to avoid.
+- **Emulated verification is recorded as verification, with the device caveat stated.** The
+  point of the pass was to exercise the real layout engine, real focus handling, and real
+  input pipelines after a year of jsdom-only checks; that barrier is crossed. Physical-device
+  spot checks remain cheap because of `?level=` deep links.
+- **The editor stays a controlled component.** The alternative (letting CodeMirror own the
+  document and only listen) would have dodged the race by giving up Reset/level-switch/draft
+  restore semantics that the game relies on. The sequence-number guard keeps the contract:
+  prop is authoritative except when it is demonstrably a lagging echo of local typing.
+- **Deferred (macrotask) editor reports over synchronous ones.** Synchronous reporting put a
+  React setState inside CodeMirror's DOM-observer flush; React 19's concurrent loop counts the
+  interleaved continuations as nested updates. Deferring coalesces bursts, keeps the newest
+  document, and makes the react update boundary a normal event-loop task.
+- **Audit tooling stays out of the repo.** The suite needs a Chromium binary downloaded from
+  npm and a stack of workarounds for the sandbox's blocked package mirrors; encoding that into
+  package.json would make CI fragile for little gain now that the durable checks (45 vitest
+  tests) run on every push.
 
-## Audit — representative berths
+## Audit trail (machines and commands)
 
-Prompt and hint progression checked across early, middle, and late shifts. No objective names a
-property from its own reference solution; no H1 or H3 copies a declaration out of the solution.
-
-| Berth | Kind | Result |
-| --- | --- | --- |
-| c1-01 Planks in Parallel | tutorial (early) | Explicit teaching kept on purpose: H1 names `display: grid`, H2 the property, H3 gives the near-miss `1fr 1fr 1fr` for a two-column berth. |
-| c1-08 Beacon Flanks | challenge (early) | Objective carries the 72px measurement because it is not inferable; hints never name the track list. |
-| c1-09 Control Strip | review (early) | Reduced scaffolding: hints mix axes and units without dictating values. |
-| c1-10 Lattice Yard Boss | boss (early) | Mandated `repeat()` named as a constraint only; counts left to the player. |
-| c4-05 When Lines Still Win | review (middle) | `forbidCSS` is stated as "no district map allowed" so the constraint is not a surprise at check time. |
-| c5-03 Fill the Shelf | practice (middle) | Objective describes the auto-fill behaviour ("empty bays still hold their space") without naming the keyword. |
-| c5-07 Canvas Loft Boss | boss (middle) | Three tools required; H3 gives the shape with `<floor>` placeholders. |
-| c8-06 Trap: Items, Not Content | challenge (late) | H1 explains why content alignment does nothing; H2 names the family; H3 names the property. |
-| c9-05 Trap: Content, Not Items | challenge (late) | Mirror of c8-06, same ladder shape. |
-| c10-07 Rerig the Whole Chart | review (late) | Objective describes positions only; the repeated-shape note stays in H1. |
-| c10-08 Autumn Convoy | boss (late) | Finale names the five districts and the gap requirement, not the area strings. |
-
-Automated checks run against the real modules (esbuild-bundled `src/data/levels.ts`,
-`src/data/harbor-glossary.ts`, `src/engine/level-tools.ts`):
-
-- objective spoiler scan (solution property names in objective text): 0 hits across 76 berths
-- H1/H3 verbatim-solution scan: 0 hits
-- hint ladder shape: 76/76 have three non-empty rungs; every H2 names either a solution property or
-  the mandated keyword (`repeat()`, `span`, `minmax()`, `auto-fit`, `dense`)
-- level integrity: 76 levels, 76 unique ids, no empty objectives
-- glossary: 22 entries, unique ids, no missing fields, chapters 1-10 all covered
-
-UI smoke test (jsdom + react-dom, exercising the real `App`, `CssEditor`, `PlayScreen`,
-`GridPreview`, `HarborGlossary`, `usefulToolsForLevel`): 31/31 checks pass, covering editor
-initialisation and document sync, Reset, Check dock, the hint ladder, the useful-tool reveal,
-glossary search and unlock gating, the expand overlay, pane defaults at 1400px and 390px, and
-progress persistence. jsdom has no layout engine, so every rectangle is zero — this run does not
-validate layout comparison or any visual spacing.
+- `npx tsc --noEmit` — clean.
+- `npm test` — 45/45.
+- Browser audit (dev + `vite preview` production build): 6 viewport contexts x 3 berths each,
+  layout/keyboard/touch/gameplay/unlock checks — zero issues; only expected note is
+  fonts.googleapis.com being unreachable from the sandbox (system-font fallback by design).
+- Stress: the exact typing sequence that threw `Maximum update depth exceeded` in ~25% of runs
+  now passes 20/20 iterations.

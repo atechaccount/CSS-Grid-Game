@@ -2,38 +2,34 @@
 
 ## Now
 
-### Verify the play screen in a real browser
+Nothing. The play-screen verification pass is complete (see `PROGRESS.md` → Done): a real
+Chromium ran the whole checklist at 1366x768, 1024x768, 768x1024, 390x844, 360x800, and
+200%-zoom emulation, against both the dev server and the production `dist/` build, with zero
+remaining defects. The two bugs the pass surfaced (a `Maximum update depth exceeded` loop
+during fast typing, with two contributing causes) are fixed and regression-tested.
 
-The editor and responsive play-screen pass is implemented (see `PROGRESS.md` → Done) and merged.
-The visual half of the brief is still unverified by a human, but it is no longer blocked: the site is
-live at https://atechaccount.github.io/CSS-Grid-Game/, so this can be checked on a real phone and
-laptop without a local build.
-
-- Load the game at 1366x768, 1024x768, 768x1024, 390x844, and 360x800, plus 200% browser zoom.
-- Confirm both dock previews stay uncropped, labels stay readable, and nothing is silently cut off.
-- Confirm the five-control header wraps without crushing the level title on short laptop screens.
-- Confirm Check dock stays reachable while the editor has focus on a phone.
-- Confirm keyboard-only use: Tab reaches every control, Escape leaves the editor, Mod+Enter checks,
-  and focus is visible everywhere.
-- Confirm the editor on a touch device: 16px input font, no unwanted page zoom, usable caret.
-- Report every remaining build, interaction, accessibility, or visible layout defect.
+What a sandbox cannot prove, and the only residual trust gap: the audit ran in emulated
+viewports (including touch and 200% zoom emulation), not on physical devices. If anything
+looks off on real hardware, `?level=<berth-id>` deep-links straight to the berth to reproduce.
 
 ## Later
 
-- Remove the Arena sandbox artifacts from `vite.config.ts`. `host: "0.0.0.0"` and
-  `allowedHosts: [".e2b.app"]` exist only so an e2b preview proxy could reach the dev server. They
-  affect the dev server only, never the build, but they do not belong in the tracked config.
-- Give the game its own storage origin, or namespace the key. Progress is saved in `localStorage`
-  under `skydock-progress-v1` (`src/store/progress.ts`), and `localStorage` is scoped to the origin,
-  not the path. Every pull request preview under
-  `https://atechaccount.github.io/CSS-Grid-Game/pr-preview/pr-<number>/` therefore reads and writes
-  the same saved progress as production, as does any other project published to
-  `atechaccount.github.io`. A preview running changed progress code can corrupt real progress.
-
-- Decide whether the single-file build is the right distribution shape. `dist/index.html` is 2.9 MB
-  because `vite-plugin-singlefile` inlines the five art plates as base64. Alternatives: drop the
-  plugin, or move the art back to `public/` and serve `dist/` as a directory.
-- Add a small automated test setup (vitest + jsdom) and keep the UI smoke checks that currently live
-  outside the repository, so editor, pane, and glossary behaviour is regression-tested.
+- Give the game its own storage origin. Progress is now namespaced per deployment
+  (`skydock-progress-v1:<base-path>` in `src/store/progress.ts`), so previews can no longer
+  corrupt production, but every deployment still lives on the shared `atechaccount.github.io`
+  origin. A dedicated origin would isolate cookies and service workers too, if those ever land.
+- The single-file build stays: `dist/index.html` (2.9 MB, 1.9 MB gzipped) is self-contained,
+  which keeps the gh-pages publish script and pr-preview workflow trivial. Revisit only if the
+  page weight ever measurably hurts players; the alternative shape (drop
+  `vite-plugin-singlefile`, serve `dist/` as a directory) is a one-line change.
+- Google Fonts is a runtime external dependency (`index.html` links fonts.googleapis.com with
+  `display=swap`, so offline or blocked networks fall back to system fonts). Self-hosting the
+  three families through `src/assets/` would inline them into the single-file build and remove
+  the external request.
 
 ## Someday
+
+- The browser audit scripts used for the verification pass live outside the repo (Playwright
+  + a serverless Chromium build). If they are ever needed again, they can be reconstructed from
+  `PROGRESS.md` → Done; the in-repo vitest suite covers the logic they cannot (jsdom has no
+  layout engine), and these covered the pixels.

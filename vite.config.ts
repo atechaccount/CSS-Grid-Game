@@ -17,17 +17,18 @@ const productionPagesBasePath = "/CSS-Grid-Game/";
  */
 const skydockBasePath = process.env.SKYDOCK_BASE_PATH || productionPagesBasePath;
 
-// https://vite.dev/config/
+/**
+ * Sandboxed preview environments (which reach the dev server through a *.e2b.app proxy host) run
+ * `npm run dev`, which loads vite.config.sandbox.ts — a gitignored override merged on top of this
+ * file that binds 0.0.0.0 and allows the preview host. The tracked config stays deployable.
+ */
 export default defineConfig(({ command }) => ({
   // The dev server always serves from the root; only builds are deployed under a subpath.
   base: command === "build" ? skydockBasePath : "/",
   plugins: [react(), tailwindcss(), viteSingleFile()],
   server: {
-    host: "0.0.0.0",
     port: 5420,
     strictPort: true,
-    // Allow the sandboxed preview host (*.e2b.app) so the dev server can be proxied to a browser.
-    allowedHosts: [".e2b.app"],
   },
   resolve: {
     alias: {

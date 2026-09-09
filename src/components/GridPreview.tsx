@@ -89,6 +89,20 @@ interface OverlayState {
   padY: number;
 }
 
+/** True when two overlay measurements hold identical values. */
+function sameTracks(a: OverlayState, b: OverlayState): boolean {
+  return (
+    a.gapX === b.gapX &&
+    a.gapY === b.gapY &&
+    a.padX === b.padX &&
+    a.padY === b.padY &&
+    a.cols.length === b.cols.length &&
+    a.rows.length === b.rows.length &&
+    a.cols.every((v, i) => v === b.cols[i]) &&
+    a.rows.every((v, i) => v === b.rows[i])
+  );
+}
+
 export function GridPreview({
   id,
   title,
@@ -128,17 +142,21 @@ export function GridPreview({
     const read = () => {
       const cs = getComputedStyle(el);
       if (cs.display !== "grid") {
-        setTracks(null);
+        // Identity-stable no-op: a ResizeObserver delivery that measures nothing new must not
+        // re-render, or RO -> setState -> render -> RO delivery loops until React throws
+        // "Maximum update depth exceeded" (observed while typing quickly in the editor).
+        setTracks((prev) => (prev === null ? prev : null));
         return;
       }
-      setTracks({
+      const next: OverlayState = {
         cols: parsePxTracks(cs.gridTemplateColumns),
         rows: parsePxTracks(cs.gridTemplateRows),
         gapX: parseFloat(cs.columnGap) || 0,
         gapY: parseFloat(cs.rowGap) || 0,
         padX: parseFloat(cs.paddingLeft) || 0,
         padY: parseFloat(cs.paddingTop) || 0,
-      });
+      };
+      setTracks((prev) => (prev && sameTracks(prev, next) ? prev : next));
     };
     read();
     const ro = new ResizeObserver(read);

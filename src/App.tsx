@@ -1,22 +1,67 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { art } from "./assets/art";
 import { ChapterMap } from "./components/ChapterMap";
 import { PlayScreen } from "./components/PlayScreen";
 import { TitleScreen } from "./components/TitleScreen";
+import { chapters } from "./data/chapters";
 import { firstIncomplete, firstLevelOf, getLevel, levels } from "./data/levels";
 import { loadProgress, resetProgress, saveProgress } from "./store/progress";
 import type { Progress } from "./types";
 
 type Screen = "title" | "map" | "play" | "howto" | "victory";
 
+const MAX_CHAPTER = chapters.reduce((max, ch) => Math.max(max, ch.id), 1);
+
+/**
+ * Query-string boot overrides, read once per page load:
+ * - `?unlock=all` unseals every shift on the harbor chart (handy for reviewing any berth
+ *   without replaying the campaign; it is persisted, so it survives a reload without the param,
+ *   and it survives "New posting" — the param expresses explicit intent to review).
+ * - `?level=<id>` jumps straight into one berth and raises the unlock to its shift so the
+ *   chart and "next berth" stay coherent.
+ */
+function bootFromQuery(): {
+  progress: Progress;
+  levelId: string | null;
+  unlockAll: boolean;
+} {
+  const params = new URLSearchParams(window.location.search);
+  let progress = loadProgress();
+  const unlockAll = params.has("unlock");
+  if (unlockAll) {
+    progress = { ...progress, unlockedChapter: MAX_CHAPTER };
+  }
+  let levelId: string | null = null;
+  const requested = params.get("level");
+  const requestedLevel = requested ? getLevel(requested) : undefined;
+  if (requestedLevel) {
+    levelId = requestedLevel.id;
+    progress = {
+      ...progress,
+      lastLevelId: requestedLevel.id,
+      seenTitle: true,
+      unlockedChapter: Math.max(progress.unlockedChapter, requestedLevel.chapter),
+    };
+  }
+  return { progress, levelId, unlockAll };
+}
+
 export default function App() {
-  const [progress, setProgress] = useState<Progress>(() => loadProgress());
-  const [screen, setScreen] = useState<Screen>("title");
+  const boot = useMemo(bootFromQuery, []);
+  const [progress, setProgress] = useState<Progress>(boot.progress);
+  const [screen, setScreen] = useState<Screen>(boot.levelId ? "play" : "title");
   const [levelId, setLevelId] = useState<string>(
-    progress.lastLevelId && getLevel(progress.lastLevelId)
-      ? progress.lastLevelId
-      : levels[0].id,
+    boot.levelId ??
+      (progress.lastLevelId && getLevel(progress.lastLevelId)
+        ? progress.lastLevelId
+        : levels[0].id),
   );
+
+  // Persist boot overrides once so `?unlock=all` and `?level=` survive a reload without the param.
+  useEffect(() => {
+    saveProgress(progress);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const level = useMemo(() => getLevel(levelId) ?? levels[0], [levelId]);
 
@@ -41,12 +86,17 @@ export default function App() {
           openLevel(progress.lastLevelId && getLevel(progress.lastLevelId) ? progress.lastLevelId : next.id);
         }}
         onStart={() => {
-          const fresh = {
-            ...resetProgress(),
+          const fresh = resetProgress();
+          // A fresh posting clears the save, but an explicit ?unlock=all still governs the chart.
+          if (boot.unlockAll) {
+            fresh.unlockedChapter = MAX_CHAPTER;
+          }
+          const next = {
+            ...fresh,
             lastLevelId: levels[0].id,
             seenTitle: true,
           };
-          commit(fresh);
+          commit(next);
           setLevelId(levels[0].id);
           setScreen("play");
         }}
