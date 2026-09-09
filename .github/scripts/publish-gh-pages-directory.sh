@@ -82,7 +82,7 @@ publish_attempt() {
     fi
 
     git commit --quiet --message "$commit_message"
-    git push origin HEAD:gh-pages
+    git push origin HEAD:refs/heads/gh-pages
   ) || exit_code=$?
 
   git worktree remove --force "$worktree_directory"
