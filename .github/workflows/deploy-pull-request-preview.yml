@@ -1,0 +1,64 @@
+name: Deploy pull request preview
+
+# Publishes an isolated preview of each same-repository pull request to
+# https://atechaccount.github.io/CSS-Grid-Game/pr-preview/pr-<number>/.
+#
+# This workflow deliberately uses `pull_request`, not `pull_request_target`, so pull
+# request code is never built with a write-enabled token. Fork pull requests therefore
+# receive a read-only token and are skipped; see README.md.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+concurrency:
+  group: gh-pages-branch
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-and-publish-preview:
+    name: Build and publish preview
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      PREVIEW_PATH: pr-preview/pr-${{ github.event.pull_request.number }}
+      PREVIEW_URL: https://atechaccount.github.io/CSS-Grid-Game/pr-preview/pr-${{ github.event.pull_request.number }}/
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build preview site
+        env:
+          SKYDOCK_BASE_PATH: /CSS-Grid-Game/${{ env.PREVIEW_PATH }}/
+        run: npm run build
+
+      - name: Publish preview to gh-pages
+        env:
+          PAGES_TARGET_SUBDIRECTORY: ${{ env.PREVIEW_PATH }}
+          PAGES_SOURCE_DIRECTORY: dist
+          PAGES_COMMIT_MESSAGE: "Deploy preview for pull request #${{ github.event.pull_request.number }}"
+        run: .github/scripts/publish-gh-pages-directory.sh
+
+      - name: Comment the preview URL on the pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+          COMMENT_BODY: |
+            <!-- skydock-pull-request-preview -->
+            **Sky Dock preview:** ${{ env.PREVIEW_URL }}
+
+            Built from ${{ github.event.pull_request.head.sha }}. Updated on every push and removed when this pull request closes. GitHub Pages can take a minute to serve the new files.
+        run: .github/scripts/comment-preview-url.sh

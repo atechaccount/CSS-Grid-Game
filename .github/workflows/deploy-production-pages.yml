@@ -1,0 +1,45 @@
+name: Deploy production Pages site
+
+# Publishes https://atechaccount.github.io/CSS-Grid-Game/ from the gh-pages branch root.
+# Pull request previews live under pr-preview/ on the same branch and are left untouched.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Every job that writes the gh-pages branch shares this group so publishes never race.
+concurrency:
+  group: gh-pages-branch
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish-production:
+    name: Build and publish production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production site
+        env:
+          SKYDOCK_BASE_PATH: /CSS-Grid-Game/
+        run: npm run build
+
+      - name: Publish to gh-pages root
+        env:
+          PAGES_TARGET_SUBDIRECTORY: ""
+          PAGES_SOURCE_DIRECTORY: dist
+          PAGES_COMMIT_MESSAGE: "Deploy production site from ${{ github.sha }}"
+        run: .github/scripts/publish-gh-pages-directory.sh
