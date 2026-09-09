@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { art } from "./assets/art";
 import { ChapterMap } from "./components/ChapterMap";
 import { PlayScreen } from "./components/PlayScreen";
@@ -9,14 +9,44 @@ import type { Progress } from "./types";
 
 type Screen = "title" | "map" | "play" | "howto" | "victory";
 
+/**
+ * Query-string boot overrides, read once per page load. Every shift and berth is always open,
+ * so the old `?unlock=all` param is accepted but no longer changes anything.
+ * `?level=<id>` jumps straight into one berth.
+ */
+function bootFromQuery(): { progress: Progress; levelId: string | null } {
+  const params = new URLSearchParams(window.location.search);
+  let progress = loadProgress();
+  let levelId: string | null = null;
+  const requested = params.get("level");
+  const requestedLevel = requested ? getLevel(requested) : undefined;
+  if (requestedLevel) {
+    levelId = requestedLevel.id;
+    progress = {
+      ...progress,
+      lastLevelId: requestedLevel.id,
+      seenTitle: true,
+    };
+  }
+  return { progress, levelId };
+}
+
 export default function App() {
-  const [progress, setProgress] = useState<Progress>(() => loadProgress());
-  const [screen, setScreen] = useState<Screen>("title");
+  const boot = useMemo(bootFromQuery, []);
+  const [progress, setProgress] = useState<Progress>(boot.progress);
+  const [screen, setScreen] = useState<Screen>(boot.levelId ? "play" : "title");
   const [levelId, setLevelId] = useState<string>(
-    progress.lastLevelId && getLevel(progress.lastLevelId)
-      ? progress.lastLevelId
-      : levels[0].id,
+    boot.levelId ??
+      (progress.lastLevelId && getLevel(progress.lastLevelId)
+        ? progress.lastLevelId
+        : levels[0].id),
   );
+
+  // Persist boot overrides once so `?unlock=all` and `?level=` survive a reload without the param.
+  useEffect(() => {
+    saveProgress(progress);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const level = useMemo(() => getLevel(levelId) ?? levels[0], [levelId]);
 
@@ -37,16 +67,16 @@ export default function App() {
         progress={progress}
         onHowTo={() => setScreen("howto")}
         onContinue={() => {
-          const next = firstIncomplete(progress.completed, progress.unlockedChapter);
+          const next = firstIncomplete(progress.completed);
           openLevel(progress.lastLevelId && getLevel(progress.lastLevelId) ? progress.lastLevelId : next.id);
         }}
         onStart={() => {
-          const fresh = {
+          const next = {
             ...resetProgress(),
             lastLevelId: levels[0].id,
             seenTitle: true,
           };
-          commit(fresh);
+          commit(next);
           setLevelId(levels[0].id);
           setScreen("play");
         }}
@@ -71,6 +101,7 @@ export default function App() {
             chapterLevels.find((l) => !progress.completed.includes(l.id)) ?? first;
           openLevel(nextInChapter.id);
         }}
+        onOpenLevel={(id) => openLevel(id)}
         onDrill={() => {
           const pool = progress.completed;
           if (!pool.length) return;
@@ -125,7 +156,8 @@ function HowTo({ onBack }: { onBack: () => void }) {
           </li>
           <li>
             On a narrow screen, switch between Your dock and the Goal dock, or expand either one
-            full screen. Progress is saved in this browser; the glossary unlocks as you advance.
+            full screen. Every shift and berth stays open — the chart is a menu, not a gate — and
+            the full glossary is always available.
           </li>
         </ol>
         <p>

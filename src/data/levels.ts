@@ -27,7 +27,6 @@ export function chapterComplete(chapter: number, completed: string[]): boolean {
   return ids.length > 0 && ids.every((id) => completed.includes(id));
 }
 
-export function firstIncomplete(completed: string[], unlockedChapter: number): Level {
-  const available = levels.filter((l) => l.chapter <= unlockedChapter);
-  return available.find((l) => !completed.includes(l.id)) ?? available[available.length - 1] ?? levels[0];
+export function firstIncomplete(completed: string[]): Level {
+  return levels.find((l) => !completed.includes(l.id)) ?? levels[levels.length - 1];
 }

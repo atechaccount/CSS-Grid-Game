@@ -41,7 +41,7 @@ description: Build, debug, and review the Sky Dock CSS Grid learning game. Use f
 - Keep first introductions explicit, then reduce scaffolding for practice, challenge, review, and boss levels.
 - Order hints from conceptual cue, to likely CSS tool, to syntax-shaped help without copying the full solution.
 - The Harbor glossary (`src/data/harbor-glossary.ts` + `src/components/HarborGlossary.tsx`) is the only reference screen; extend it instead of adding a parallel source of truth.
-- Keep glossary definitions plain-language, searchable when expanded, and unlocked consistently with chapter progress.
+- Keep glossary definitions plain-language and searchable when expanded; the glossary and the harbor chart are fully open (nothing is gated behind progress).
 
 ## Verify meaningful behavior
 

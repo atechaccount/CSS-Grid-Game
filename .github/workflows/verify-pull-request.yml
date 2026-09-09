@@ -1,7 +1,7 @@
 name: Verify
 
-# Type-checks and builds every pull request and every push to main, so a change
-# cannot reach the production deploy without compiling first.
+# Type-checks, tests, and builds every pull request and every push to main, so a change
+# cannot reach the production deploy without compiling and passing the suite first.
 on:
   pull_request:
     branches: [main]
@@ -16,8 +16,8 @@ permissions:
   contents: read
 
 jobs:
-  typecheck-and-build:
-    name: Type-check and build
+  typecheck-test-build:
+    name: Type-check, test, and build
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -34,6 +34,9 @@ jobs:
 
       - name: Type-check
         run: npx tsc --noEmit
+
+      - name: Test
+        run: npm test
 
       - name: Build
         run: npm run build

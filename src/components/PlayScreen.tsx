@@ -108,10 +108,7 @@ export function PlayScreen({
       const badges = chapterDone && !progress.badges.includes(chapter.id)
         ? [...progress.badges, chapter.id]
         : progress.badges;
-      const unlockedChapter = chapterDone
-        ? Math.max(progress.unlockedChapter, Math.min(10, chapter.id + 1))
-        : progress.unlockedChapter;
-      patch({ completed, badges, unlockedChapter, lastLevelId: level.id });
+      patch({ completed, badges, lastLevelId: level.id });
     } else {
       setPassed(false);
       setMessages(result.messages);
@@ -150,10 +147,6 @@ export function PlayScreen({
       onMap();
       return;
     }
-    if (nxt.chapter > progress.unlockedChapter) {
-      onMap();
-      return;
-    }
     onGoto(nxt.id);
   };
 
@@ -186,16 +179,12 @@ export function PlayScreen({
             onChange={(e) => onGoto(e.target.value)}
             aria-label="Jump to level"
           >
-            {chapterLevels.map((l, idx) => {
-              const prevDone = idx === 0 || progress.completed.includes(chapterLevels[idx - 1].id);
-              const open = prevDone || progress.completed.includes(l.id) || l.id === level.id;
-              return (
-                <option key={l.id} value={l.id} disabled={!open}>
-                  {l.order}. {l.title}
-                  {progress.completed.includes(l.id) ? " ✓" : ""}
-                </option>
-              );
-            })}
+            {chapterLevels.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.order}. {l.title}
+                {progress.completed.includes(l.id) ? " ✓" : ""}
+              </option>
+            ))}
           </select>
         </label>
         <button type="button" className="btn-ghost" onClick={() => setShowSheet(true)}>
@@ -207,7 +196,8 @@ export function PlayScreen({
       </header>
 
       <aside className="play-brief">
-        <div className="brief-card">
+        {/* Keyed by berth so switching levels replays the entrance motion. */}
+        <div className="brief-card" key={`brief-${level.id}`}>
           <div className="narrator">
             <img src={narratorSrc} alt="" />
             <div>
@@ -356,7 +346,10 @@ export function PlayScreen({
           Both docks stay mounted at the same width even when only one is on screen:
           validation measures the hidden dock too, so it must be laid out, never display: none.
         */}
-        <div className={`stage-panes ${singlePane ? "is-single" : "is-both"}`}>
+        <div
+          key={`stage-${level.id}`}
+          className={`stage-panes ${singlePane ? "is-single" : "is-both"}`}
+        >
           <div
             className={`preview-slot ${singlePane && pane !== "yours" ? "is-offscreen" : ""}`}
             aria-hidden={singlePane && pane !== "yours"}
@@ -461,6 +454,17 @@ export function PlayScreen({
             {chapter.lesson.split("\n\n").map((para) => (
               <p key={para.slice(0, 24)}>{para}</p>
             ))}
+            <h3>The properties in this shift</h3>
+            <dl className="lesson-props">
+              {chapter.properties.map((prop) => (
+                <div key={prop.name} className="lesson-prop">
+                  <dt>
+                    <code>{prop.name}</code>
+                  </dt>
+                  <dd>{prop.does}</dd>
+                </div>
+              ))}
+            </dl>
             <h3>When you’d use this</h3>
             <p>{chapter.realWorld}</p>
             <h3>Common mistakes</h3>
@@ -476,12 +480,7 @@ export function PlayScreen({
         </div>
       ) : null}
 
-      {showSheet ? (
-        <HarborGlossary
-          unlockedChapter={progress.unlockedChapter}
-          onClose={() => setShowSheet(false)}
-        />
-      ) : null}
+      {showSheet ? <HarborGlossary onClose={() => setShowSheet(false)} /> : null}
     </div>
   );
 }

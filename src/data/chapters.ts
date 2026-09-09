@@ -18,6 +18,28 @@ export const chapters: Chapter[] = [
       "Mixing up columns (vertical tracks) and rows (horizontal tracks).",
     ],
     concepts: ["display: grid", "grid-template-columns", "grid-template-rows", "fr", "repeat()"],
+    properties: [
+      {
+        name: "display: grid",
+        does: "Turns the element into a grid container — its direct children become grid items laid out in rows and columns. Without it, every template property below does nothing.",
+      },
+      {
+        name: "grid-template-columns",
+        does: "Cuts the vertical tracks: one size per column, space-separated, so \"120px 1fr 2fr\" is a three-column grid with those widths.",
+      },
+      {
+        name: "grid-template-rows",
+        does: "The same thing for horizontal tracks: one size per row, in order, top to bottom.",
+      },
+      {
+        name: "fr",
+        does: "A share of the space left over after fixed sizes and gap are paid. 1fr 1fr splits evenly; 1fr 2fr gives the second track twice the first.",
+      },
+      {
+        name: "repeat()",
+        does: "Compresses a repeated track list: repeat(4, 1fr) is exactly \"1fr 1fr 1fr 1fr\" — and far kinder to read at 12 columns.",
+      },
+    ],
   },
   {
     id: 2,
@@ -36,6 +58,24 @@ export const chapters: Chapter[] = [
       "Equal % tracks plus gap. Use fr.",
     ],
     concepts: ["gap", "column-gap", "row-gap", "fr vs %"],
+    properties: [
+      {
+        name: "gap",
+        does: "Shorthand for the space between tracks on both axes at once: gap: 12px sets rows and columns. It sits between tracks only — never on the outer edge.",
+      },
+      {
+        name: "row-gap",
+        does: "Space between consecutive rows only. In the two-value shorthand (gap: 8px 20px) it comes first.",
+      },
+      {
+        name: "column-gap",
+        does: "Space between consecutive columns only. In the two-value shorthand it comes second.",
+      },
+      {
+        name: "fr vs %",
+        does: "fr shares out what remains after gap is reserved, so equal fr tracks always fit; percentages ignore gap, so 50% 50% plus any gap overflows the dock.",
+      },
+    ],
   },
   {
     id: 3,
@@ -54,6 +94,24 @@ export const chapters: Chapter[] = [
       "Numbering from 0. Grid lines start at 1.",
     ],
     concepts: ["grid-column", "grid-row", "span", "named lines"],
+    properties: [
+      {
+        name: "grid-column",
+        does: "Where an item sits horizontally, as start line / end line: grid-column: 1 / 3 runs from line 1 to line 3 and covers two tracks (the end line is exclusive).",
+      },
+      {
+        name: "grid-row",
+        does: "The same placement for vertical position: grid-row: 2 / 4 pins an item from row line 2 to line 4, spanning two rows.",
+      },
+      {
+        name: "span",
+        does: "Cover N tracks from wherever you start: grid-column: 2 / span 2 begins at line 2 and takes two columns — no end-line arithmetic.",
+      },
+      {
+        name: "named lines",
+        does: "Names declared in brackets in the template ([port] 1fr [mid] 1fr [starboard]) become usable start/end lines: grid-column: port / starboard.",
+      },
+    ],
   },
   {
     id: 4,
@@ -72,6 +130,20 @@ export const chapters: Chapter[] = [
       "Forgetting to assign grid-area on the children — the picture alone does nothing.",
     ],
     concepts: ["grid-template-areas", "grid-area", "empty cells"],
+    properties: [
+      {
+        name: "grid-template-areas",
+        does: "Draws the whole layout as quoted rows of names; every repetition of a name merges into one rectangular region (L-shapes are rejected and the template is dropped).",
+      },
+      {
+        name: "grid-area",
+        does: "Assigns a child to a named region: grid-area: head puts that item in every cell the head region covers. Also the shorthand for all four placement lines.",
+      },
+      {
+        name: "empty cells",
+        does: "A lone period (.) in the template leaves that cell intentionally empty — no item can claim it.",
+      },
+    ],
   },
   {
     id: 5,
@@ -90,6 +162,28 @@ export const chapters: Chapter[] = [
       "Forgetting a min on auto-fill tracks, so they collapse to zero.",
     ],
     concepts: ["minmax()", "min-content", "max-content", "auto-fill", "auto-fit"],
+    properties: [
+      {
+        name: "minmax()",
+        does: "Clamps one track between a floor and a ceiling: minmax(12rem, 1fr) never shrinks below 12rem and shares leftover space above it. The minimum must be a definite size — 1fr cannot be a min.",
+      },
+      {
+        name: "min-content",
+        does: "The narrowest the track can be without content overflowing — roughly the width of its longest word.",
+      },
+      {
+        name: "max-content",
+        does: "As wide as the content wants when nothing is allowed to wrap.",
+      },
+      {
+        name: "auto-fill",
+        does: "Inside repeat(), spins up as many tracks as fit and keeps the spares empty but reserved: repeat(auto-fill, minmax(8rem, 1fr)).",
+      },
+      {
+        name: "auto-fit",
+        does: "Same as auto-fill, then collapses the empty tracks so the items you did place stretch into the leftover space.",
+      },
+    ],
   },
   {
     id: 6,
@@ -108,6 +202,20 @@ export const chapters: Chapter[] = [
       "Forgetting that placed items reserve cells before auto-placement runs.",
     ],
     concepts: ["grid-auto-flow", "dense", "grid shorthand"],
+    properties: [
+      {
+        name: "grid-auto-flow",
+        does: "The direction auto-placement walks: row (the default) fills a row left-to-right before starting the next; column fills top-to-bottom before starting the next column.",
+      },
+      {
+        name: "dense",
+        does: "Lets the packer backfill holes left behind by bigger spanned items — later small items jump into earlier gaps, which changes visual (and reading) order.",
+      },
+      {
+        name: "grid shorthand",
+        does: "Rows, flow, and columns in one line: grid: 80px 1fr / repeat(3, 1fr) reads \"rows 80px 1fr, columns repeat(3, 1fr)\".",
+      },
+    ],
   },
   {
     id: 7,
@@ -126,6 +234,20 @@ export const chapters: Chapter[] = [
       "Assuming implicit columns appear when auto-flow is row — extras become rows, not columns.",
     ],
     concepts: ["implicit grid", "grid-auto-rows", "grid-auto-columns"],
+    properties: [
+      {
+        name: "implicit grid",
+        does: "Tracks the browser creates by itself when items overrun the explicit template — they default to auto sizing, which is why surprise rows can look different from planned ones.",
+      },
+      {
+        name: "grid-auto-rows",
+        does: "The size handed to every implicitly created row: grid-auto-rows: 96px gives overflow rows a real height instead of auto.",
+      },
+      {
+        name: "grid-auto-columns",
+        does: "The same deal for implicitly created columns, which appear when auto-flow is column or an item is placed past the last explicit column line.",
+      },
+    ],
   },
   {
     id: 8,
@@ -144,6 +266,24 @@ export const chapters: Chapter[] = [
       "Forgetting the axis: justify* is left-right in a horizontal writing mode.",
     ],
     concepts: ["justify-items", "align-items", "justify-self", "align-self"],
+    properties: [
+      {
+        name: "justify-items",
+        does: "Sets the default horizontal alignment of items inside their own cells: start, end, center, or stretch (the default).",
+      },
+      {
+        name: "align-items",
+        does: "The same default alignment, on the vertical (block) axis.",
+      },
+      {
+        name: "justify-self",
+        does: "Overrides the horizontal alignment for one item only — the crate, not the whole yard.",
+      },
+      {
+        name: "align-self",
+        does: "Overrides the vertical alignment for one item only.",
+      },
+    ],
   },
   {
     id: 9,
@@ -162,6 +302,20 @@ export const chapters: Chapter[] = [
       "Mixing up around vs evenly on a design spec.",
     ],
     concepts: ["justify-content", "align-content", "space-*"],
+    properties: [
+      {
+        name: "justify-content",
+        does: "Distributes the tracks themselves — the whole lattice — horizontally inside the container, but only when the tracks leave leftover space.",
+      },
+      {
+        name: "align-content",
+        does: "The same distribution of leftover space, on the vertical axis: it moves the rows, not the items inside them.",
+      },
+      {
+        name: "space-*",
+        does: "Leftover-space flavors: space-between puts it all between tracks, space-around adds half-gutters on the outer edges, space-evenly makes every gap identical. With 1fr tracks they do nothing — the tracks already ate the free space.",
+      },
+    ],
   },
   {
     id: 10,
@@ -180,5 +334,23 @@ export const chapters: Chapter[] = [
       "Skipping gap until the end, then watching every span look “off.”",
     ],
     concepts: ["place-items", "place-content", "place-self", "grid shorthand", "mixed layouts"],
+    properties: [
+      {
+        name: "place-items",
+        does: "align-items and justify-items in one declaration: one value covers both axes, two values read vertical then horizontal.",
+      },
+      {
+        name: "place-content",
+        does: "align-content and justify-content together — the leftover-space distribution for both axes at once.",
+      },
+      {
+        name: "place-self",
+        does: "align-self and justify-self for a single item, same one/two-value pattern.",
+      },
+      {
+        name: "grid shorthand",
+        does: "Packs rows, flow, and columns into one declaration — powerful, but it resets any part of the grid it does not mention, so template-areas can be wiped by a careless copy.",
+      },
+    ],
   },
 ];

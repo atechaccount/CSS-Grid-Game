@@ -51,6 +51,8 @@ function harborEditorExtensions(
   onDocumentChange: (next: string) => void,
   onRun: () => void,
 ): Extension[] {
+  // One report slot per editor instance.
+  let pendingReport = false;
   return [
     lineNumbers(),
     highlightActiveLine(),
@@ -65,7 +67,22 @@ function harborEditorExtensions(
     syntaxHighlighting(harborCssHighlight),
     EditorView.lineWrapping,
     EditorView.updateListener.of((update) => {
-      if (update.docChanged) onDocumentChange(update.state.doc.toString());
+      if (!update.docChanged) return;
+      // Report document changes from a macrotask, never synchronously inside the dispatch that
+      // CodeMirror runs from its MutationObserver flush. During fast typing that flush
+      // interleaves with React's concurrent work loop, and a setState per keystroke from inside
+      // it nests until React throws "Maximum update depth exceeded". Coalescing also collapses
+      // a burst of edits into one report of the latest document.
+      const view = update.view;
+      if (pendingReport) return;
+      pendingReport = true;
+      setTimeout(() => {
+        pendingReport = false;
+        if (!view.dom.isConnected) return; // the editor went away before the report ran
+        // Read the live document: the newest edit wins, and any external change that landed
+        // in between is respected rather than overwritten by a stale snapshot.
+        onDocumentChange(view.state.doc.toString());
+      }, 0);
     }),
     EditorView.contentAttributes.of({
       id: "css-editor",
@@ -103,6 +120,12 @@ export function CssEditor({
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
   const onRunRef = useRef(onRun);
+  // Sequence numbers for every document string this editor has emitted through onChange, plus
+  // the sequence the sync effect last applied. The sync effect consults them so it never fights
+  // live typing; see the effect below.
+  const emittedSeqRef = useRef<Map<string, number>>(new Map([[value, 1]]));
+  const appliedSeqRef = useRef(1);
+  const seqRef = useRef(1);
 
   // Callbacks stay behind refs so the CodeMirror view is built once and never rebuilt on re-render.
   useEffect(() => {
@@ -120,7 +143,11 @@ export function CssEditor({
       state: EditorState.create({
         doc: value,
         extensions: harborEditorExtensions(
-          (next) => onChangeRef.current(next),
+          (next) => {
+            const seq = ++seqRef.current;
+            emittedSeqRef.current.set(next, seq);
+            onChangeRef.current(next);
+          },
           () => onRunRef.current(),
         ),
       }),
@@ -138,7 +165,27 @@ export function CssEditor({
     const view = viewRef.current;
     if (!view) return;
     const doc = view.state.doc.toString();
-    if (doc === value) return;
+    if (doc === value) {
+      // Settled: everything emitted so far is committed; only future edits count.
+      const seq = emittedSeqRef.current.get(value) ?? ++seqRef.current;
+      appliedSeqRef.current = seq;
+      emittedSeqRef.current = new Map([[value, seq]]);
+      return;
+    }
+    const valueSeq = emittedSeqRef.current.get(value);
+    if (valueSeq !== undefined && valueSeq > appliedSeqRef.current) {
+      // `value` is one of this editor's own edits catching up on a lagging commit (a queued
+      // keystroke can beat the passive effect flush) while the doc is already further ahead.
+      // Reverting would fight the typist and loop listener -> onChange -> effect until React
+      // throws "Maximum update depth exceeded". The newest local edit always wins.
+      return;
+    }
+    // Everything else is an external decision (Reset, level switch, draft restore) — including
+    // a level switch back to a draft the editor emitted earlier: the parent has explicitly
+    // asked for it, so it must win over the doc's current content. Replace the document.
+    seqRef.current += 1;
+    appliedSeqRef.current = seqRef.current;
+    emittedSeqRef.current = new Map([[value, seqRef.current]]);
     view.dispatch({ changes: { from: 0, to: doc.length, insert: value } });
   }, [value]);
 
