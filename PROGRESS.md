@@ -14,6 +14,16 @@ check of the chart pills.
 
 ## Done
 
+- **Per-shift property explanations.** Every chapter now carries a curated `properties` list
+  (`PropertyNote` in `src/types.ts`): one entry per property/keyword the shift teaches, each
+  with exactly one sentence on what the property does when the browser applies it — 38 notes
+  across the 10 shifts (e.g. `grid-column` "runs from line 1 to line 3 and covers two tracks —
+  the end line is exclusive"). They render two ways: a collapsible "What the properties do"
+  section on every chart card (native `<details>`, collapsed by default), and a "The properties
+  in this shift" list in the chapter Lesson modal. Chart notes are light-on-dark, lesson notes
+  dark-on-paper (an earlier single-color rule failed contrast on the paper modal — caught by
+  screenshot). Covered by 3 tests (data integrity, concepts consistency, chart toggle) and a
+  browser pass (all 38 notes render, no overflow, modal lists all 5 for Shift I).
 - **Sealing removed — the campaign is a menu, not a gate.** Every shift card on the harbor
   chart is always clickable and carries a row of numbered berth pills, so any level is one
   click from the chart (pills show a check mark once cleared). The in-game berth dropdown

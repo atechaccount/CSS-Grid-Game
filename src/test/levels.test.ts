@@ -3,6 +3,38 @@ import { chapters } from "../data/chapters";
 import { levels, levelsForChapter } from "../data/levels";
 import { usefulToolsForLevel } from "../engine/level-tools";
 
+describe("chapter property notes", () => {
+  it("gives every shift a per-property explanation of exactly what each tool does", () => {
+    for (const chapter of chapters) {
+      expect(chapter.properties.length, `${chapter.title} has property notes`).toBeGreaterThan(0);
+      const names = chapter.properties.map((p) => p.name);
+      expect(new Set(names).size, `${chapter.title} property names unique`).toBe(names.length);
+      for (const prop of chapter.properties) {
+        expect(prop.name.trim(), `${chapter.title} name`).not.toBe("");
+        expect(prop.does.trim(), `${chapter.title}: ${prop.name} explanation`).not.toBe("");
+        // Explanations are sentences, not headings: they should say what happens.
+        expect(prop.does.length, `${chapter.title}: ${prop.name} explanation length`).toBeGreaterThan(
+          30,
+        );
+      }
+    }
+  });
+
+  it("keeps the shift's property names consistent with its concepts list", () => {
+    for (const chapter of chapters) {
+      const concepts = chapter.concepts.join(" ");
+      for (const prop of chapter.properties) {
+        // A property note teaches a tool the shift actually names (modulo shorthand wording).
+        const head = prop.name.replace(/[():]/g, " ").trim().split(/\s+/)[0];
+        expect(
+          concepts.toLowerCase(),
+          `${chapter.title}: ${prop.name} should relate to its concepts`,
+        ).toContain(head.toLowerCase().split("-")[0]);
+      }
+    }
+  });
+});
+
 describe("level data integrity", () => {
   it("holds the full campaign: 76 berths across 10 shifts", () => {
     expect(levels).toHaveLength(76);

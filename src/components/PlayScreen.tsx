@@ -450,6 +450,17 @@ export function PlayScreen({
             {chapter.lesson.split("\n\n").map((para) => (
               <p key={para.slice(0, 24)}>{para}</p>
             ))}
+            <h3>The properties in this shift</h3>
+            <dl className="lesson-props">
+              {chapter.properties.map((prop) => (
+                <div key={prop.name} className="lesson-prop">
+                  <dt>
+                    <code>{prop.name}</code>
+                  </dt>
+                  <dd>{prop.does}</dd>
+                </div>
+              ))}
+            </dl>
             <h3>When you’d use this</h3>
             <p>{chapter.realWorld}</p>
             <h3>Common mistakes</h3>

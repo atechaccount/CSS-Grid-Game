@@ -326,6 +326,69 @@ a:focus-visible {
   border-color: rgba(90, 160, 120, 0.55);
 }
 
+/* "What the properties do": per-shift property explanations, collapsed by default. */
+.map-props {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgba(212, 177, 90, 0.16);
+}
+
+.map-props summary {
+  cursor: pointer;
+  color: #9eb0bb;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.map-props summary:hover {
+  color: var(--brass-bright);
+}
+
+.map-props[open] summary {
+  margin-bottom: 0.45rem;
+}
+
+.map-props dl,
+.lesson-props {
+  margin: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.map-prop dt,
+.lesson-prop dt {
+  margin: 0 0 0.1rem;
+}
+
+.map-prop code,
+.lesson-prop code {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--brass-bright);
+  background: rgba(12, 18, 26, 0.7);
+  border: 1px solid rgba(212, 177, 90, 0.24);
+  border-radius: 2px;
+  padding: 0.08rem 0.32rem;
+}
+
+.map-prop dd,
+.lesson-prop dd {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+/* Card notes sit on the dark chart; lesson notes sit on the light paper modal. */
+.map-prop dd {
+  color: #d5cbb8;
+}
+
+.lesson-prop dd {
+  color: #43392b;
+}
+
 /* Numbered berth pills: jump straight to any level on the chart. */
 .map-levels {
   display: flex;

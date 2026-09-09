@@ -62,6 +62,23 @@ export function ChapterMap({
                   {done ? <span className="map-badge">Badge</span> : null}
                 </button>
                 {/*
+                  Exactly what every property in this shift does, one sentence each. Native
+                  <details> keeps it one click away without burying the chart under prose.
+                */}
+                <details className="map-props">
+                  <summary>What the properties do</summary>
+                  <dl>
+                    {ch.properties.map((prop) => (
+                      <div key={prop.name} className="map-prop">
+                        <dt>
+                          <code>{prop.name}</code>
+                        </dt>
+                        <dd>{prop.does}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </details>
+                {/*
                   Every berth is one click from the chart: the campaign is a menu, not a gate.
                   Pills keep the chapter card click as the convenient default (next uncleared).
                 */}

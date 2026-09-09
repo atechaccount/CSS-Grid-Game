@@ -62,6 +62,13 @@ export interface Level {
   boardHeight?: number;
 }
 
+export interface PropertyNote {
+  /** The property or keyword exactly as a player would type it, e.g. `grid-template-columns`. */
+  name: string;
+  /** One sentence: exactly what the property does when the browser applies it. */
+  does: string;
+}
+
 export interface Chapter {
   id: number;
   shift: string;
@@ -73,6 +80,8 @@ export interface Chapter {
   realWorld: string;
   mistakes: string[];
   concepts: string[];
+  /** Per-property explanations for the shift: what each tool actually does. */
+  properties: PropertyNote[];
 }
 
 export interface OverlaySettings {

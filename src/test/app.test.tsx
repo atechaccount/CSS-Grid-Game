@@ -46,6 +46,29 @@ describe("app boot", () => {
     expect(pills.filter((b) => b.disabled)).toHaveLength(0);
   });
 
+  it("explains what every property in a shift does, expandable on the card", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "Take the post" }));
+    await user.click(screen.getByRole("button", { name: "Chart" }));
+
+    const details = document.querySelectorAll("details.map-props");
+    expect(details).toHaveLength(10);
+
+    const first = details[0];
+    // Collapsed by default: the open attribute flips only when the summary is clicked
+    // (jsdom keeps the content in the DOM even while visually hidden).
+    expect(first.hasAttribute("open")).toBe(false);
+    (first.querySelector("summary") as HTMLElement).click();
+    expect(first.hasAttribute("open")).toBe(true);
+
+    const terms = [...first.querySelectorAll("dt code")].map((el) => el.textContent);
+    expect(terms.length).toBeGreaterThan(0);
+    expect(terms).toContain("display: grid");
+    const firstDoes = first.querySelector("dd")?.textContent ?? "";
+    expect(firstDoes).toMatch(/grid container|children become grid items/);
+  });
+
   it("opens any berth directly from a chart pill", async () => {
     const user = userEvent.setup();
     render(<App />);
