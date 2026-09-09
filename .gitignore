@@ -1,0 +1,5 @@
+CLAUDE.local.md
+AGENTS.override.md
+.claude/settings.local.json
+node_modules/
+dist/
