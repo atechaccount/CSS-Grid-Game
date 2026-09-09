@@ -17,3 +17,4 @@ Project-specific instructions. Global rules live in ~/.codex/AGENTS.md and are i
 
 - Project skills live in `.agents/skills/` and must remain repository-scoped.
 - Use the `css-grid-game` skill for implementation, debugging, or review work on the game.
+- Apply the `write-discoverable-code` skill whenever writing or renaming code, exported symbols, files, errors, types, or documentation attached to code.
