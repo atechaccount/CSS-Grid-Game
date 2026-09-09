@@ -352,15 +352,26 @@ a:focus-visible {
   color: var(--paper);
 }
 
+/* Five header controls that wrap instead of crushing the title on short or narrow viewports. */
 .play-top {
   grid-area: top;
-  display: grid;
-  grid-template-columns: auto 1fr auto auto auto;
-  gap: 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.7rem;
   align-items: center;
-  padding: 0.55rem 0.8rem;
+  padding: 0.5rem 0.8rem;
   background: var(--navy-2);
   border-bottom: 1px solid rgba(176, 141, 62, 0.3);
+}
+
+.play-top .btn-ghost {
+  padding: 0.5rem 0.75rem;
+  min-height: 2.5rem;
+}
+
+.play-titles {
+  flex: 1 1 15rem;
+  min-width: 0;
 }
 
 .play-titles h1 {
@@ -383,13 +394,15 @@ a:focus-visible {
   gap: 0.15rem;
   font-size: 0.72rem;
   color: #b9c4ce;
+  min-width: 0;
 }
 
 .play-jump select {
   background: #101820;
   color: var(--cloud);
   border: 1px solid rgba(243, 234, 215, 0.25);
-  padding: 0.35rem 0.5rem;
+  padding: 0.45rem 0.5rem;
+  min-height: 2.5rem;
   max-width: 220px;
 }
 
@@ -470,7 +483,7 @@ a:focus-visible {
 }
 
 .brief-goal h2,
-.editor-card-head label,
+.editor-card-label,
 .solution-box h3,
 .modal-card h2,
 .modal-card h3,
@@ -479,6 +492,33 @@ a:focus-visible {
   margin: 0 0 0.25rem;
   color: var(--ink);
   line-height: 1.3;
+}
+
+/* Optional "useful tool" reveal: names the property, never the value. */
+.brief-tools {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+  justify-items: start;
+}
+
+.tool-toggle {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+  color: var(--ink);
+  border-color: rgba(28, 36, 48, 0.3);
+}
+
+.tool-reveal {
+  font-size: 0.88rem;
+}
+
+.tool-reveal code {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background: #f7f1e6;
+  border: 1px solid rgba(28, 36, 48, 0.14);
+  padding: 0.05rem 0.3rem;
 }
 
 .editor-card {
@@ -491,10 +531,22 @@ a:focus-visible {
 
 .editor-card-head {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 0.5rem;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
   color: var(--ink-soft);
   font-size: 0.8rem;
+}
+
+.editor-card-label {
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.editor-card-keys {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
 }
 
 .editor-actions {
@@ -583,7 +635,7 @@ a:focus-visible {
 .overlay-toggles {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: 0.5rem 0.8rem;
   color: #d5cbb8;
   font-size: 0.88rem;
 }
@@ -592,21 +644,50 @@ a:focus-visible {
   display: flex;
   gap: 0.35rem;
   align-items: center;
+  min-height: 2rem;
 }
 
+.overlay-toggles input {
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--brass-bright);
+}
+
+.pane-toggle button {
+  min-height: 2.25rem;
+}
+
+/*
+  Both dock previews stay in the layout at all times: validation measures the goal dock even when
+  it is not the one on screen. In single-pane mode the hidden dock shares the same grid cell and
+  the same width, so it is laid out identically and simply not painted.
+*/
 .stage-panes {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 0.8rem;
   align-items: start;
+  min-height: 0;
 }
 
-.stage-panes.is-yours .preview-card:nth-child(2),
-.stage-panes.is-goal .preview-card:nth-child(1) {
-  position: absolute;
-  left: -80rem;
-  width: 360px;
-  height: 320px;
+.stage-panes.is-both {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+}
+
+.stage-panes.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.preview-slot {
+  display: grid;
+  min-width: 0;
+}
+
+.stage-panes.is-single .preview-slot {
+  grid-area: 1 / 1;
+}
+
+.preview-slot.is-offscreen {
+  visibility: hidden;
 }
 
 .stage-concepts {
@@ -622,10 +703,19 @@ a:focus-visible {
 }
 
 .preview-head {
-  padding: 0.55rem 0.7rem 0.45rem;
+  padding: 0.5rem 0.6rem 0.45rem 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.1rem 0.6rem;
+  background: #efe3c8;
+}
+
+.preview-head-copy {
   display: grid;
   gap: 0.1rem;
-  background: #efe3c8;
+  min-width: 0;
 }
 
 .preview-head h3 {
@@ -638,6 +728,13 @@ a:focus-visible {
   font-size: 0.8rem;
 }
 
+.preview-expand {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.78rem;
+  color: var(--ink);
+  border-color: rgba(28, 36, 48, 0.3);
+}
+
 .preview-stage {
   display: grid;
   place-items: center;
@@ -646,15 +743,52 @@ a:focus-visible {
     linear-gradient(#7eb7d0, #4e7f96);
 }
 
+/* The board shrinks to the pane but never below readability; --dock-board-size caps the grown size. */
 .preview-root {
   position: relative;
-  width: 360px;
-  max-width: 360px;
-  height: 100%;
+  width: min(100%, var(--dock-board-size, 360px));
 }
 
 .preview-root .harbor {
   position: relative;
+}
+
+/* Full-screen compare overlay for phones and any player who wants the boards bigger. */
+.preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.6rem;
+  padding: 0.8rem;
+  background: rgba(8, 12, 18, 0.9);
+  color: var(--paper);
+}
+
+.preview-overlay-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.preview-overlay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.preview-overlay-stage {
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  place-items: start center;
+}
+
+.preview-overlay-stage .preview-card {
+  width: min(100%, 48rem);
 }
 
 .grid-overlay {
@@ -703,67 +837,79 @@ a:focus-visible {
   top: 2px;
 }
 
-.editor-shell {
-  display: grid;
-  grid-template-columns: 2.4rem minmax(0, 1fr);
-  min-height: 180px;
+/*
+  CodeMirror 6 skin. Selectors carry the .css-editor host class so they out-rank the styles
+  CodeMirror injects into <head> at runtime.
+*/
+.css-editor {
+  min-height: 0;
   height: 100%;
   background: #151e28;
   border: 1px solid #2a3848;
   overflow: hidden;
 }
 
-.editor-gutter {
-  display: flex;
-  flex-direction: column;
-  padding: 10px 0;
+.css-editor .cm-editor {
+  height: 100%;
+  background: transparent;
+  color: #d7e0ea;
+}
+
+.css-editor .cm-editor.cm-focused {
+  outline: 2px solid var(--brass-bright);
+  outline-offset: -2px;
+}
+
+.css-editor .cm-editor .cm-scroller {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.55;
+  overscroll-behavior: contain;
+}
+
+.css-editor .cm-editor .cm-content {
+  caret-color: #e4c36a;
+  padding: 8px 0;
+}
+
+.css-editor .cm-editor .cm-line {
+  padding: 0 10px;
+}
+
+.css-editor .cm-editor .cm-gutters {
   background: #10161e;
   color: #7d8b99;
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  line-height: 1.55;
-  text-align: right;
-  user-select: none;
+  border-right: 1px solid #22303e;
 }
 
-.editor-gutter span {
-  padding: 0 0.45rem;
+.css-editor .cm-editor .cm-activeLine {
+  background: rgba(212, 177, 90, 0.08);
 }
 
-.editor-pane {
-  position: relative;
-  min-width: 0;
-  min-height: 0;
+.css-editor .cm-editor .cm-activeLineGutter {
+  background: rgba(212, 177, 90, 0.16);
+  color: #e4c36a;
 }
 
-.editor-highlight,
-.editor-input {
-  margin: 0;
-  position: absolute;
-  inset: 0;
-  padding: 10px 12px;
-  border: 0;
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  line-height: 1.55;
-  tab-size: 2;
-  white-space: pre;
-  overflow: auto;
-  resize: none;
+.css-editor .cm-editor .cm-selectionBackground {
+  background: rgba(91, 163, 197, 0.4);
 }
 
-.editor-highlight {
-  color: #d7e0ea;
-  pointer-events: none;
+.css-editor .cm-editor.cm-focused .cm-selectionBackground {
+  background: rgba(212, 177, 90, 0.34);
 }
 
-.editor-input {
-  z-index: 1;
-  background: transparent;
-  color: transparent;
-  caret-color: #e4c36a;
+.css-editor .cm-editor .cm-cursor {
+  border-left-color: #e4c36a;
 }
 
+.css-editor .cm-editor .cm-matchingBracket {
+  background: rgba(212, 177, 90, 0.26);
+  outline: 1px solid rgba(212, 177, 90, 0.65);
+  color: inherit;
+}
+
+/* CSS token colors, applied by the HighlightStyle in src/components/CssEditor.tsx. */
 .cm-cmt {
   color: #7d8b99;
   font-style: italic;
@@ -785,6 +931,12 @@ a:focus-visible {
 }
 .cm-kw {
   color: #c79284;
+}
+.cm-var {
+  color: #d7e0ea;
+}
+.cm-punc {
+  color: #93a6b8;
 }
 
 .modal-backdrop,
@@ -848,11 +1000,67 @@ a:focus-visible {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 0.7rem;
+  align-items: start;
 }
 
 .sheet-item {
   background: var(--paper-2);
   padding: 0.7rem;
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+}
+
+/* Searchable glossary: query box, live count, and the per-entry anatomy. */
+.glossary-search {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.glossary-search label {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.glossary-search input {
+  padding: 0.55rem 0.65rem;
+  min-height: 2.5rem;
+  background: #fbf6ea;
+  color: var(--ink);
+  border: 1px solid rgba(28, 36, 48, 0.3);
+  font-size: 1rem;
+}
+
+.glossary-count,
+.glossary-empty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.glossary-empty {
+  padding: 0.8rem;
+  background: var(--paper-2);
+  border-left: 3px solid var(--brass);
+}
+
+.glossary-term code {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  background: #f7f1e6;
+  border: 1px solid rgba(28, 36, 48, 0.14);
+  padding: 0.1rem 0.35rem;
+  color: #1a2330;
+}
+
+.glossary-definition {
+  font-size: 0.9rem;
+}
+
+.glossary-when {
+  font-size: 0.84rem;
+  color: var(--ink-soft);
 }
 
 @media (max-width: 980px) {
@@ -867,16 +1075,68 @@ a:focus-visible {
       "brief";
   }
 
-  .play-top {
-    grid-template-columns: 1fr 1fr;
+  /* The page scrolls as a whole here, so the brief must not create its own scroll container. */
+  .play-brief {
+    overflow: visible;
+    grid-template-rows: auto auto;
   }
 
-  .stage-panes.is-both {
-    grid-template-columns: 1fr;
+  .editor-card {
+    grid-template-rows: auto auto auto;
+  }
+
+  /* Keep Check dock on screen while the keyboard is up on a phone. */
+  .css-editor {
+    height: clamp(12rem, 34vh, 20rem);
+  }
+
+  .editor-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 6;
+    padding: 0.45rem 0 0.1rem;
+    background: linear-gradient(var(--paper) 78%, rgba(243, 234, 215, 0));
+  }
+
+  .editor-actions .btn-brass,
+  .editor-actions .btn-ghost {
+    min-height: 2.5rem;
+    padding: 0.55rem 0.9rem;
   }
 
   .map-top {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Short laptop screens: tighten the chrome so both docks still fit without scrolling. */
+@media (max-height: 780px) and (min-width: 981px) {
+  .play-brief {
+    padding: 0.6rem;
+    gap: 0.6rem;
+  }
+
+  .brief-card {
+    padding: 0.65rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .narrator {
+    grid-template-columns: 44px 1fr;
+  }
+
+  .narrator img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .play-stage {
+    padding: 0.6rem;
+    gap: 0.5rem;
+  }
+
+  .preview-stage {
+    padding: 0.5rem;
   }
 }
 
@@ -885,7 +1145,24 @@ a:focus-visible {
     padding: 12vh 1.1rem 2rem;
   }
 
+  .play-jump {
+    flex: 1 1 100%;
+  }
+
   .play-jump select {
     max-width: 100%;
+  }
+
+  /* 16px keeps iOS Safari from zooming the page when the editor takes focus. */
+  .css-editor .cm-editor .cm-scroller {
+    font-size: 16px;
+  }
+
+  .css-editor .cm-editor .cm-gutters {
+    font-size: 14px;
+  }
+
+  .sheet-list {
+    grid-template-columns: 1fr;
   }
 }

@@ -19,7 +19,8 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "The timetable is read top to bottom, then the next bay. That’s column flow. If we leave the default (row), the hours run the wrong way and the convoy is late. Again.",
-    objective: "2×3 explicit grid, grid-auto-flow: column, six beacons.",
+    objective:
+      "Six beacons fill the first column top to bottom before the next column starts — two decks, three bays.",
     items: [
       u("a", "beacon", "1"),
       u("b", "beacon", "2"),
@@ -31,9 +32,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: repeat(3, 1fr);\n  gap: 8px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: repeat(3, 1fr);\n  gap: 8px;\n  grid-auto-flow: column;\n}`,
     hints: [
-      "Default auto-flow is row (left to right, then down).",
-      "column fills top to bottom, then the next column.",
-      "grid-auto-flow: column;",
+      "Auto-placement has a walking order, and the default walks rows.",
+      "grid-auto-flow decides which axis fills first.",
+      "Shape: grid-auto-flow: <axis>; — name the axis that fills first.",
     ],
     explanation:
       "With column flow, items 1–3 stack in the first column and 4–6 in the second. Same cells, different reading order.",
@@ -51,7 +52,8 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Wide crate spans three of four bays. Hangar needs two, so it drops a row and leaves a one-cell hole. Without dense, the keg follows the hangar. Fill the hole.",
-    objective: "Set grid-auto-flow: dense so the keg backfills the leftover cell on row 1.",
+    objective:
+      "The keg backfills the single-cell hole the crane left on the top deck instead of berthing after it.",
     items: [
       u("wide1", "crate", "Wide", "wide1"),
       u("wide2", "hangar", "Hang", "wide2"),
@@ -60,9 +62,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.wide1 {\n  grid-column: span 3;\n}\n\n.wide2 {\n  grid-column: span 2;\n}\n`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n  grid-auto-flow: dense;\n}\n\n.wide1 {\n  grid-column: span 3;\n}\n\n.wide2 {\n  grid-column: span 2;\n}\n`,
     hints: [
-      "A spanned item can leave a one-cell hole that later small items could fill.",
-      "dense tells auto-placement to go back and fill holes.",
-      "grid-auto-flow: dense;",
+      "A spanned unit can leave a gap that smaller cargo would happily fill, but placement never walks backwards by default.",
+      "dense lets auto-placement return to holes.",
+      "Shape: grid-auto-flow: dense; — it can ride along with the axis keyword.",
     ],
     explanation:
       "Wide takes three of four cells on row 1. Hang needs two, so it won’t fit the leftover cell and drops to row 2. Without dense, the keg follows Hang. With dense, the keg backfills the one-cell hole on row 1.",
@@ -80,7 +82,8 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "Wren wants the template in one property. grid: <rows> / <columns>. Instrument row 56px, hold 1fr, three equal bays.",
-    objective: "Use the grid shorthand: 56px 1fr / repeat(3, 1fr).",
+    objective:
+      "The whole template on one ledger line: a 56px strip over one flexible deck, three equal bays across.",
     items: [
       u("a", "engine", "A"),
       u("b", "engine", "B"),
@@ -92,9 +95,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  gap: 8px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 8px;\n  grid: 56px 1fr / repeat(3, 1fr);\n}`,
     hints: [
-      "grid: <row-template> / <column-template>;",
-      "Rows first, then a slash, then columns.",
-      "grid: 56px 1fr / repeat(3, 1fr);",
+      "Both templates can be written in a single declaration.",
+      "The grid shorthand takes rows, a slash, then columns.",
+      "Shape: grid: <row tracks> / <column tracks>;.",
     ],
     explanation:
       "The grid shorthand sets template-rows, template-columns, and resets several other grid properties. Rows, slash, columns.",
@@ -112,7 +115,7 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Pin the crane to column 1, spanning both rows. Let four crates auto-flow in row order through what’s left of a 3×2.",
-    objective: "3×2, gap 8px. .crane { grid-column: 1; grid-row: 1 / 3; }",
+    objective: "The crane pins the whole port column; the crates flow around it and fill the rest.",
     items: [
       u("crane", "crane", "Crane"),
       u("a", "crate", "A"),
@@ -123,9 +126,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.crane {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.crane {\n  grid-column: 1;\n  grid-row: 1 / 3;\n}`,
     hints: [
-      "Place the crane first. Auto-flow does the crates.",
-      "Crane occupies the whole first column.",
-      "grid-column: 1; grid-row: 1 / 3;",
+      "Placed units are pinned first and auto-placement fills whatever is left.",
+      "Pin the crane with grid-column and grid-row, then let the crates flow.",
+      "Shape: the crane takes the first column and both row lines.",
     ],
     explanation:
       "Placed items reserve cells. Auto-flow then walks the remaining cells in row-major order: (2,1), (3,1), (2,2), (3,2).",
@@ -142,7 +145,7 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "Four tanks, two rows, two columns, but fill down first. Tank 2 should sit under tank 1, not beside it.",
-    objective: "2×2 with grid-auto-flow: column.",
+    objective: "The numbered crates read down the port column first, then down the starboard column.",
     items: [
       u("a", "tank", "1"),
       u("b", "tank", "2"),
@@ -152,9 +155,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n  grid-auto-flow: column;\n}`,
     hints: [
-      "If 2 sits beside 1, you’re still in row flow.",
-      "column flow walks the first column, then the second.",
-      "grid-auto-flow: column;",
+      "If crate 2 sits beside crate 1, the traffic is still walking rows.",
+      "grid-auto-flow decides the walking direction.",
+      "Shape: grid-auto-flow: column;.",
     ],
     explanation:
       "A small, obvious check: 1 and 2 share a column only when flow is column.",
@@ -171,7 +174,8 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Shorthand plus flow. Two equal rows, four equal columns, column-major traffic, 8px gap. Eight barrels numbered in the source. If 2 is beside 1, you failed the watch.",
-    objective: "grid: 1fr 1fr / repeat(4, 1fr); grid-auto-flow: column; gap: 8px.",
+    objective:
+      "Eight units fill down each of four equal bays across two equal decks, 8px of clearance everywhere, template on one ledger line.",
     items: [
       u("a", "barrel", "1"),
       u("b", "barrel", "2"),
@@ -185,9 +189,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 8px;\n  grid: 1fr 1fr / repeat(4, 1fr);\n  grid-auto-flow: column;\n}`,
     hints: [
-      "You can set the template with grid: and the walk order with grid-auto-flow.",
-      "Two rows, four columns, fill down.",
-      "grid: 1fr 1fr / repeat(4, 1fr); grid-auto-flow: column;",
+      "Three ideas in one berth: the shorthand template, the walking order, and the taxiway.",
+      "The grid shorthand, grid-auto-flow, and gap.",
+      "Shape: grid: <rows> / <columns>; grid-auto-flow: <axis>; gap: <size>;.",
     ],
     explanation:
       "Boss: shorthand template + non-default flow. Barrels 1–2 stack, then 3–4 in the next column, and so on.",
@@ -206,14 +210,14 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "We only built two explicit rows. Five crates still showed up. Watch the ghost deck appear. Then we’ll teach it manners.",
-    objective: "2 columns, 2 explicit 1fr rows, 8px gap. Five crates — let the implicit row exist.",
+    objective: "Five crates on a two-column dock: two planned decks and a third that nobody drew.",
     items: crates(5),
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}`,
     hints: [
-      "You don’t have to define a third row. Overflow creates it.",
-      "Two columns, two explicit rows is enough.",
-      "grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;",
+      "You do not have to plan every row — cargo past the plan gets a deck of its own.",
+      "Plan with grid-template-columns and grid-template-rows; let the third row be implicit.",
+      "Shape: two equal column tracks, two equal row tracks, one clearance value.",
     ],
     explanation:
       "Four crates fill the explicit 2×2. The fifth creates an implicit row. Its height is auto (content-sized) unless you say otherwise.",
@@ -230,14 +234,15 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "That implicit deck came out as a squat little auto row. I want overflow rows at 64px. grid-auto-rows. Five crates, two explicit 1fr rows, two columns.",
-    objective: "grid-auto-rows: 64px on a 2-column grid with two 1fr explicit rows.",
+    objective:
+      "The two planned decks stay flexible, but the ghost deck that appears for the overflow is exactly 64px.",
     items: crates(5),
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n  grid-auto-rows: 64px;\n}`,
     hints: [
-      "grid-auto-rows sizes implicit rows only.",
-      "Explicit 1fr rows stay 1fr.",
-      "grid-auto-rows: 64px;",
+      "Implicit tracks have their own size rule, and planned tracks are never touched by it.",
+      "grid-auto-rows sizes the rows the plan did not draw.",
+      "Shape: grid-auto-rows: <size>;.",
     ],
     explanation:
       "template-rows still owns the first two decks. auto-rows owns any row the cargo forced into existence.",
@@ -255,7 +260,8 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "Column flow, one explicit column, three rows, four tanks. A ghost column will appear. Make those implicit columns 1fr.",
-    objective: "grid-auto-flow: column; one 1fr column; three 1fr rows; grid-auto-columns: 1fr.",
+    objective:
+      "Traffic runs down one planned column and then keeps going into columns nobody drew — all of them equal width.",
     items: [
       u("a", "tank", "1"),
       u("b", "tank", "2"),
@@ -265,9 +271,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr;\n  grid-template-rows: repeat(3, 1fr);\n  gap: 8px;\n  grid-auto-flow: column;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr;\n  grid-template-rows: repeat(3, 1fr);\n  gap: 8px;\n  grid-auto-flow: column;\n  grid-auto-columns: 1fr;\n}`,
     hints: [
-      "Overflow in column flow creates implicit columns, not rows.",
-      "grid-auto-columns is the sibling of grid-auto-rows.",
-      "grid-auto-columns: 1fr;",
+      "In column flow, overflow creates ghost columns rather than ghost rows.",
+      "grid-auto-columns is the sibling rule for those ghosts.",
+      "Shape: one flexible column, three flexible rows, column traffic, and a size for the ghost columns.",
     ],
     explanation:
       "Three rows fill, the fourth tank starts a new implicit column. auto-columns: 1fr makes that ghost as wide as the explicit bay.",
@@ -285,7 +291,8 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Put the beacon on column line 5 of a 2-column grid. Yes, that creates ghost columns. I want to see if you understand the cost of a wild line number.",
-    objective: "2 explicit 1fr columns. .beacon { grid-column: 5; }. Also set grid-auto-columns: 1fr.",
+    objective:
+      "The beacon berths on the fifth column line of a two-column dock, and the ghosts in between share the width equally.",
     items: [
       u("a", "crate", "A"),
       u("b", "crate", "B"),
@@ -294,9 +301,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr;\n  gap: 6px;\n}\n\n.beacon {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr;\n  gap: 6px;\n  grid-auto-columns: 1fr;\n}\n\n.beacon {\n  grid-column: 5;\n}`,
     hints: [
-      "Placing on line 5 of a 2-column grid creates implicit columns 3 and 4.",
-      "Give those ghosts 1fr so they share width.",
-      "grid-column: 5 on .beacon; grid-auto-columns: 1fr on .harbor.",
+      "Placing past the plan drags implicit tracks into existence between the plan and the pin.",
+      "Pin the beacon with grid-column, then size the ghosts with grid-auto-columns.",
+      "Shape: a start line well past the plan on .beacon, and one flexible size for the ghost columns on .harbor.",
     ],
     explanation:
       "Out-of-range placement is a fast way to spawn empty implicit tracks. Sometimes that’s the design. Usually it’s a typo.",
@@ -313,14 +320,15 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "I set grid-auto-rows: 80px and wondered why my two explicit rows didn’t listen. Because they’re explicit, Wren said, and then she took my tea. Make the explicit rows 1fr 1fr and the overflow 80px. Four + two crates.",
-    objective: "2 cols, template-rows 1fr 1fr, auto-rows 80px, six crates.",
+    objective:
+      "Two flexible planned decks and 80px ghost decks for anything past them, on a two-column dock.",
     items: crates(6),
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 8px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  grid-auto-rows: 80px;\n  gap: 8px;\n}`,
     hints: [
-      "auto-rows never overrides template-rows.",
-      "You need both: two flexible explicit decks, then 80px ghosts — though with six crates and two cols, the third row is implicit.",
-      "grid-template-rows: 1fr 1fr; grid-auto-rows: 80px;",
+      "Two different row rules, and neither one overrides the other.",
+      "grid-template-rows for the planned decks, grid-auto-rows for the rest.",
+      "Shape: two equal row tracks in the template, plus one fixed size for the automatic rows.",
     ],
     explanation:
       "Six items / two columns = three rows. The first two are explicit 1fr; the third is implicit 80px. That’s the trap: two properties, two jobs.",
@@ -338,7 +346,8 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Explicit 3×2 of 1fr tracks, gap 8px, auto-rows 48px. Seven units. The seventh should sit on a short ghost deck, not a stretched surprise.",
-    objective: "repeat(3, 1fr) columns, repeat(2, 1fr) rows, grid-auto-rows: 48px, gap: 8px.",
+    objective:
+      "Six cells planned in a 3×2 lattice with 8px of clearance, and a 48px ghost deck for whatever overflows.",
     items: [
       u("a", "crate", "A"),
       u("b", "barrel", "B"),
@@ -351,9 +360,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: repeat(2, 1fr);\n  grid-auto-rows: 48px;\n  gap: 8px;\n}`,
     hints: [
-      "Six cells explicit; the seventh row is implicit.",
-      "Stamp the 3×2, then set auto-rows.",
-      "grid-auto-rows: 48px.",
+      "Six cells fit the plan; anything past it becomes implicit.",
+      "Stamped templates, gap, and grid-auto-rows.",
+      "Shape: two stamped equal lists, one clearance value, and one fixed size for automatic rows.",
     ],
     explanation:
       "Boss of the implicit grid: you planned six berths and still treated the seventh as a known policy, not an accident.",
@@ -372,7 +381,7 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "The barrels are smaller than their cells. They’re stretching like wet canvas. Center them horizontally in each berth. justify-items.",
-    objective: "3-column grid, justify-items: center. Token-sized units.",
+    objective: "Every unit sits centred inside its own berth instead of stretching wall to wall.",
     items: [
       u("a", "barrel", "A"),
       u("b", "barrel", "B"),
@@ -382,9 +391,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr;\n  justify-items: center;\n}`,
     hints: [
-      "justify-items moves items on the inline (horizontal) axis inside their cells.",
-      "Default is stretch — that’s why they look wide.",
-      "justify-items: center;",
+      "By default a unit is lashed to all four sides of its cell — that is why they look wide.",
+      "justify-items sets the default horizontal lashing for every cell.",
+      "Shape: justify-items: <position>; — the middle of the inline axis.",
     ],
     explanation:
       "With a fixed token size, stretch can’t fatten them, but the default start/stretch rules still affect placement. justify-items: center parks each barrel in the middle of its cell.",
@@ -402,7 +411,7 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Beacons belong on the deck, not floating mid-cell. align-items: end. Vertical axis. Don’t justify them — I didn’t ask.",
-    objective: "2×2, align-items: end, token units.",
+    objective: "Every unit rides low in its berth, flush with the deck.",
     items: [
       u("a", "beacon", "A"),
       u("b", "beacon", "B"),
@@ -413,9 +422,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  align-items: end;\n}`,
     hints: [
-      "align-items is the block (vertical) axis.",
-      "end is the bottom of each cell in a horizontal writing mode.",
-      "align-items: end;",
+      "Vertical lashing is a separate axis from horizontal.",
+      "align-items sets the default vertical lashing for every cell.",
+      "Shape: align-items: <position>; — the end of the block axis is the deck.",
     ],
     explanation:
       "align-items: end lashed every beacon to the bottom of its cell. The cells themselves didn’t move.",
@@ -433,7 +442,7 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "Center the winches in their cells, both ways. Two properties, or you’ll invent a new kind of almost.",
-    objective: "justify-items: center; align-items: center on a 3×2 of tokens.",
+    objective: "Every unit sits dead centre of its berth, both ways.",
     items: [
       u("a", "winch", "A"),
       u("b", "winch", "B"),
@@ -446,9 +455,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr 1fr;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr 1fr;\n  justify-items: center;\n  align-items: center;\n}`,
     hints: [
-      "Horizontal: justify-items. Vertical: align-items.",
-      "Both should be center.",
-      "You’ll meet place-items in Shift X. Not yet.",
+      "Two axes, two properties — neither one covers the other.",
+      "justify-items horizontally, align-items vertically.",
+      "Shape: two declarations, both with the centred keyword. The shorthand arrives in Shift X.",
     ],
     explanation:
       "Two axes, two properties. This is the longhand of place-items: center — you’ll get the shorthand later.",
@@ -465,7 +474,7 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "All balloons centered in their cells — except the red flagship, which lashed itself to the starboard end of its cell. justify-self on the exception.",
-    objective: "justify-items: center on the harbor; .flagship { justify-self: end; }",
+    objective: "The whole crew is centred except the flagship, which hugs the starboard side of its berth.",
     items: [
       u("a", "balloon", "A"),
       u("flagship", "flagship", "Queen"),
@@ -475,9 +484,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr;\n}\n\n.flagship {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr;\n  justify-items: center;\n}\n\n.flagship {\n  justify-self: end;\n}`,
     hints: [
-      "Set the default on the container, override one child.",
-      "The override property is justify-self.",
-      "justify-items: center; .flagship { justify-self: end; }",
+      "Set the default on the harbor, then overrule a single unit.",
+      "justify-self is the per-item override on the inline axis.",
+      "Shape: justify-items: <position>; on the harbor, justify-self: <position>; on .flagship.",
     ],
     explanation:
       "Self properties override items properties for one grid item. The Queen takes the right edge of her berth; the balloons stay centered.",
@@ -495,7 +504,7 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "Everyone centered. The tank, though, should sit on the top of its cell — align-self: start. It’s full of vapor and opinions.",
-    objective: "place all items centered, then .tank { align-self: start; }",
+    objective: "Everything is centred in its berth except the tank, which rides high.",
     items: [
       u("a", "crate", "A"),
       u("tank", "tank", "Tank"),
@@ -506,9 +515,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  justify-items: center;\n  align-items: center;\n}\n\n.tank {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  justify-items: center;\n  align-items: center;\n}\n\n.tank {\n  align-self: start;\n}`,
     hints: [
-      "The container already centers both axes.",
-      "Override the vertical axis on .tank.",
-      "align-self: start;",
+      "The container already lashes both axes; only one unit needs an exception.",
+      "align-self overrides the block axis for a single item.",
+      "Shape: align-self: <position>; on .tank only.",
     ],
     explanation:
       "align-self overrides align-items for one item. start is the top of the cell.",
@@ -526,7 +535,7 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "The tracks are 1fr — they already eat the extra space. justify-content will look like it does nothing. You want the tokens centered in their cells. justify-items. Do not “content” your way out of this.",
-    objective: "justify-items: center on equal 1fr columns of tokens. Do not use justify-content.",
+    objective: "Centre the tokens inside their berths — the bays themselves must not move.",
     items: [
       u("a", "engine", "A"),
       u("b", "engine", "B"),
@@ -536,9 +545,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  grid-template-rows: 1fr;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  grid-template-rows: 1fr;\n  justify-items: center;\n}`,
     hints: [
-      "1fr tracks consume leftover width, so content alignment has nothing to distribute.",
-      "You are moving cargo inside cells.",
-      "justify-items: center;",
+      "Equal flexible tracks already eat the leftover width, so there is nothing outside them to distribute.",
+      "You are moving cargo inside cells — that is the items family, not the content family.",
+      "Shape: justify-items: <position>; — the content property has nothing to do here.",
     ],
     explanation:
       "This is the most common Grid mix-up. content = tracks in the container. items = units in the cell. With 1fr tracks, only items does anything visible here.",
@@ -557,7 +566,7 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Crew centered in every cell. Crane lashed to the bottom-right of its cell (end / end). 2×2 tokens. If the crane floats, you failed.",
-    objective: "justify-items and align-items center; .crane { justify-self: end; align-self: end; }",
+    objective: "Crew centred in every berth; the crane lashed to the starboard aft corner of its own.",
     items: [
       u("a", "crew", "Pip"),
       u("b", "crew", "Ada"),
@@ -568,9 +577,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n}\n\n.crane {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  justify-items: center;\n  align-items: center;\n}\n\n.crane {\n  justify-self: end;\n  align-self: end;\n}`,
     hints: [
-      "Center is the default for the crew.",
-      "The crane needs both self properties at end.",
-      "You’ll get place-self in the finale. Longhand today.",
+      "Defaults for the crew, exceptions for the crane.",
+      "justify-items and align-items on the harbor; justify-self and align-self on .crane.",
+      "Shape: four declarations — two defaults, two overrides at the same corner.",
     ],
     explanation:
       "Boss: container defaults + a two-axis self override. The crane sits in the south-east corner of its berth.",
@@ -588,7 +597,7 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "Three 80px columns on a wide dock. Leftover sky on both sides. Center the whole lattice with justify-content. The tokens can stretch — we’re moving tracks now.",
-    objective: "grid-template-columns: 80px 80px 80px; justify-content: center.",
+    objective: "Three 80px bays sit as a group in the middle of the dock, with equal water either side.",
     items: [
       u("a", "crate", "A"),
       u("b", "crate", "B"),
@@ -597,9 +606,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 80px 80px 80px;\n  grid-template-rows: 80px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 80px 80px 80px;\n  grid-template-rows: 80px;\n  justify-content: center;\n}`,
     hints: [
-      "Tracks are smaller than the harbor, so leftover space exists.",
-      "justify-content packs those tracks on the inline axis.",
-      "justify-content: center;",
+      "Fixed tracks are narrower than the harbor, so leftover space exists outside them.",
+      "justify-content shifts the whole track group along the inline axis.",
+      "Shape: justify-content: <packing>; — pack them into the middle.",
     ],
     explanation:
       "Fixed tracks don’t eat leftover width. justify-content distributes that leftover. center parks the whole 240px lattice in the middle.",
@@ -617,7 +626,8 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Two 70px rows in a tall harbor. Pin one deck to the top and one to the bottom. align-content: space-between.",
-    objective: "Two 70px rows, align-content: space-between.",
+    objective:
+      "Two 70px decks: one flush with the top of the dock, one flush with the bottom, all the leftover water between them.",
     items: [
       u("a", "platform", "A"),
       u("b", "platform", "B"),
@@ -625,9 +635,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr;\n  grid-template-rows: 70px 70px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr;\n  grid-template-rows: 70px 70px;\n  align-content: space-between;\n}`,
     hints: [
-      "align-content is the block axis for leftover height.",
-      "space-between puts leftover only between tracks.",
-      "align-content: space-between;",
+      "Leftover height lives outside the tracks, so it needs the other alignment family.",
+      "align-content distributes leftover space on the block axis.",
+      "Shape: align-content: <packing>; — the packing that puts space only between tracks.",
     ],
     explanation:
       "space-between: first track at start, last track at end, leftover in the middle. No outer padding from this property.",
@@ -645,7 +655,7 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "Four 64px bays. I want equal leftover on the outer edges and between them. That’s space-evenly, not around. Around cheats the edges to half.",
-    objective: "repeat(4, 64px) with justify-content: space-evenly.",
+    objective: "Four 64px bays with identical water in every gap, outer edges included.",
     items: [
       u("a", "beacon", "A"),
       u("b", "beacon", "B"),
@@ -655,9 +665,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 64px);\n  grid-template-rows: 80px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 64px);\n  grid-template-rows: 80px;\n  justify-content: space-evenly;\n}`,
     hints: [
-      "space-evenly: equal leftover in every gap, including outer.",
-      "space-around: half leftover on the outer edges.",
-      "justify-content: space-evenly;",
+      "Two packing keywords look alike and differ on the outer edges.",
+      "justify-content with the even packing.",
+      "Shape: four equal fixed tracks, then the packing keyword that gives equal space everywhere.",
     ],
     explanation:
       "space-evenly splits leftover into N+1 equal gaps for N tracks. The outer sky matches the inner aisles.",
@@ -675,7 +685,7 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Now I do want around — half leftover on the outer edges, full leftover between 70px columns. Three hangar tokens? No: three crates. Prove you can tell around from evenly.",
-    objective: "70px 70px 70px, justify-content: space-around.",
+    objective: "Three 70px bays with half-gutters on the outer edges and full gaps between them.",
     items: [
       u("a", "crate", "A"),
       u("b", "crate", "B"),
@@ -684,9 +694,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 70px 70px 70px;\n  grid-template-rows: 90px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 70px 70px 70px;\n  grid-template-rows: 90px;\n  justify-content: space-around;\n}`,
     hints: [
-      "around ≠ evenly. Around gives half-gutters on the outer edges.",
-      "This level is the trap’s twin from the previous berth.",
-      "justify-content: space-around;",
+      "The twin of the previous berth: this packing gives the outer edges half of an inner gap.",
+      "justify-content with the around packing.",
+      "Shape: three equal fixed tracks plus the packing keyword for half-edge spacing.",
     ],
     explanation:
       "space-around: each track gets equal leftover on both sides, so inner gaps look twice an outer gap. That’s the tell.",
@@ -704,7 +714,8 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "80px columns, wide dock. I tried justify-items: center and the tracks didn’t budge — the little crates just sat in fat stretched cells. Move the tracks. justify-content.",
-    objective: "Three 80px columns, justify-content: center. No justify-items.",
+    objective:
+      "The three 80px bays sit as a centred group while the cargo still fills each berth wall to wall.",
     items: [
       u("a", "barrel", "A"),
       u("b", "barrel", "B"),
@@ -713,9 +724,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 80px 80px 80px;\n  grid-template-rows: 80px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 80px 80px 80px;\n  grid-template-rows: 80px;\n  justify-content: center;\n}`,
     hints: [
-      "The leftover space is outside the tracks, not inside the cells… wait, both exist, but the goal is a packed centered lattice.",
-      "Items alignment won’t slide the columns as a group.",
-      "justify-content: center;",
+      "The leftover space here is outside the tracks; inside the cells the units already stretch.",
+      "Move the track group with the content family, not the cargo.",
+      "Shape: justify-content: <position>; — the items property is off limits.",
     ],
     explanation:
       "The twin trap of Shift VIII. Here the leftover is around the tracks, so content alignment is the lever.",
@@ -734,7 +745,7 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Both axes. Three 72px columns, two 64px rows. Center the lattice horizontally. space-between the decks vertically. Gap 0 — leftover does the talking.",
-    objective: "justify-content: center; align-content: space-between.",
+    objective: "The bay group centred across the dock while the deck group is split top and bottom.",
     items: [
       u("a", "engine", "A"),
       u("b", "engine", "B"),
@@ -746,9 +757,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 72px 72px 72px;\n  grid-template-rows: 64px 64px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 72px 72px 72px;\n  grid-template-rows: 64px 64px;\n  justify-content: center;\n  align-content: space-between;\n}`,
     hints: [
-      "Horizontal leftover → justify-content.",
-      "Vertical leftover → align-content.",
-      "center and space-between.",
+      "Both axes have leftover space, and each axis has its own property.",
+      "justify-content horizontally, align-content vertically.",
+      "Shape: two declarations — one centred packing, one between packing.",
     ],
     explanation:
       "Two leftover problems, two properties. The 3×2 brick is centered as a block and split toward the top and bottom edges.",
@@ -766,7 +777,7 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "The shorthand ledger again. place-items is align-items then justify-items. Center the tokens in one line. The convoy flags are watching.",
-    objective: "place-items: center on a 3×2 of tokens.",
+    objective: "Every token dead centre of its berth, written as a single declaration.",
     items: [
       u("a", "sail", "A"),
       u("b", "sail", "B"),
@@ -779,9 +790,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr 1fr;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr 1fr;\n  place-items: center;\n}`,
     hints: [
-      "place-items: <align-items> <justify-items>;",
-      "One value sets both axes.",
-      "place-items: center;",
+      "The two lashing properties have a shorthand.",
+      "place-items sets both axes at once.",
+      "Shape: place-items: <position>; — one value covers both axes.",
     ],
     explanation:
       "place-items: center is the grown-up version of the two longhands you wrote in Shift VIII.",
@@ -799,14 +810,14 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Fixed 80px × 80px 2×2 brick in a large harbor. Center it as a whole. place-content: center.",
-    objective: "2×2 of 80px tracks, place-content: center.",
+    objective: "Four 80px cells sit as a centred group, both axes, from one declaration.",
     items: crates(4),
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 80px 80px;\n  grid-template-rows: 80px 80px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 80px 80px;\n  grid-template-rows: 80px 80px;\n  place-content: center;\n}`,
     hints: [
-      "place-content is align-content + justify-content.",
-      "One value centers both axes.",
-      "place-content: center;",
+      "The track-group properties have a shorthand too.",
+      "place-content sets align-content and justify-content together.",
+      "Shape: place-content: <position>;.",
     ],
     explanation:
       "The brick of tracks is smaller than the dock on both axes. place-content: center parks the whole lattice in the middle.",
@@ -824,7 +835,8 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "Crew centered via place-items. Flagship wants the bottom-right of its cell in one property: place-self: end.",
-    objective: "place-items: center; .flagship { place-self: end; }",
+    objective:
+      "The crew centred by one declaration; the flagship shoved to the aft starboard corner of its berth by another.",
     items: [
       u("a", "crew", "A"),
       u("b", "crew", "B"),
@@ -835,9 +847,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  place-items: center;\n}\n\n.flagship {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  place-items: center;\n}\n\n.flagship {\n  place-self: end;\n}`,
     hints: [
-      "place-self overrides place-items for one item.",
-      "One value end = align-self end + justify-self end.",
-      "place-self: end;",
+      "There is a per-item shorthand to match the container one.",
+      "place-self overrides both self properties for a single unit.",
+      "Shape: place-items: <position>; on the harbor, place-self: <position>; on .flagship.",
     ],
     explanation:
       "place-self: end is the corner lash you wrote as two properties in the Lash Yard boss.",
@@ -855,7 +867,8 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Write the yard in one grid: statement. 48px chrome row, 1fr hold, columns 1fr 2fr 1fr, 8px gap. Six units fill it.",
-    objective: "grid: 48px 1fr / 1fr 2fr 1fr; gap: 8px;",
+    objective:
+      "A 48px chrome strip over one flexible deck, bays weighted one-two-one, 8px of clearance — template on one ledger line.",
     items: [
       u("a", "beacon", "A"),
       u("b", "beacon", "B"),
@@ -867,9 +880,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 8px;\n  grid: 48px 1fr / 1fr 2fr 1fr;\n}`,
     hints: [
-      "grid: <rows> / <columns>;",
-      "Chrome is 48px; hold is 1fr; middle column is 2fr.",
-      "grid: 48px 1fr / 1fr 2fr 1fr;",
+      "Rows, slash, columns: the whole template in one declaration.",
+      "The grid shorthand, then gap.",
+      "Shape: grid: <row tracks> / <column tracks>; followed by a one-value clearance.",
     ],
     explanation:
       "The grid shorthand plus gap is a complete explicit yard. You didn’t need areas or placement.",
@@ -887,7 +900,8 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "Named shell, then a 10px gap so it doesn’t look like a brick. Head spanning two, nav | main. Rows 52px 1fr, columns 88px 1fr.",
-    objective: 'Areas "head head" / "nav main" with gap: 10px.',
+    objective:
+      "Head across the top, nav and main splitting the deck below, 10px of water between every district.",
     items: [
       u("head", "beacon", "Head", "head"),
       u("nav", "sail", "Nav", "nav"),
@@ -896,9 +910,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 88px 1fr;\n  grid-template-rows: 52px 1fr;\n}\n`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 88px 1fr;\n  grid-template-rows: 52px 1fr;\n  gap: 10px;\n  grid-template-areas:\n    "head head"\n    "nav  main";\n}\n.head { grid-area: head; }\n.nav { grid-area: nav; }\n.main { grid-area: main; }`,
     hints: [
-      "This is District Hall plus Taxiways.",
-      "Draw the areas, assign them, add gap.",
-      '"head head" / "nav main", gap 10px.',
+      "District Hall plus Taxiways — map and clearance in one berth.",
+      "grid-template-areas, grid-area claims, and gap.",
+      "Shape: two quoted rows of two names, three claims, one clearance value.",
     ],
     explanation:
       "Mixed skills: areas from IV, gap from II. Real pages look like this, not like textbook single-property drills.",
@@ -916,7 +930,8 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Responsive shelf of minmax(90px, 1fr) auto-fit, 8px gap. The Skywhale banner spans the entire first row — grid-column: 1 / -1. Crates auto-flow under it.",
-    objective: "auto-fit minmax shelf; .banner { grid-column: 1 / -1; }",
+    objective:
+      "A shelf of bays that reflows with the width, and a banner stretched across every one of them — however many there turn out to be.",
     items: [
       u("banner", "airship", "Skywhale", "banner"),
       u("a", "crate", "A"),
@@ -927,9 +942,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}\n\n.banner {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 8px;\n  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));\n}\n\n.banner {\n  grid-column: 1 / -1;\n}`,
     hints: [
-      "Negative lines count from the end. -1 is the last line.",
-      "1 / -1 spans every column, even when auto-fit changes the count.",
-      "repeat(auto-fit, minmax(90px, 1fr)) plus grid-column: 1 / -1.",
+      "You cannot name the last line by number when the count changes; negative lines count back from the end.",
+      "auto-fit with minmax() for the shelf, and a negative end line in grid-column for the banner.",
+      "Shape: repeat(auto-fit, minmax(<floor>, 1fr)) plus a span from the first line to the last, written with a negative number.",
     ],
     explanation:
       "1 / -1 is the placement trick that survives a responsive column count. Combined with auto-fit, it’s a real hero + cards module.",
@@ -947,7 +962,7 @@ export const lateLevels: Level[] = [
     narrator: "pip",
     story:
       "Last drill before the convoy. 4 columns, 2 rows, 8px gap. Crane spans 2 cols on row 1. Tank spans both rows in the last column. Two crates auto-flow. You’ve done every piece.",
-    objective: "Crane 1 / 3 row 1. Tank column 4 rows 1 / 3. Crates unplaced.",
+    objective: "Crane wide across the top-left, tank tall on the starboard edge, crates filling the rest.",
     items: [
       u("crane", "crane", "Crane"),
       u("tank", "tank", "Tank"),
@@ -957,9 +972,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.crane {\n  \n}\n\n.tank {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.crane {\n  grid-column: 1 / 3;\n  grid-row: 1;\n}\n\n.tank {\n  grid-column: 4;\n  grid-row: 1 / 3;\n}`,
     hints: [
-      "Same shape as the Berth Office boss. That’s spaced repetition, not déjà vu.",
-      "Crane wide and short; tank tall and starboard.",
-      "crane 1 / 3; tank column 4 and 1 / 3.",
+      "Same picture as the Berth Office boss. That is spaced repetition, not déjà vu.",
+      "grid-column and grid-row on two units; the rest auto-places.",
+      "Shape: one unit spans two bays on the top deck, the other pins the last column across both rows.",
     ],
     explanation:
       "A fluency check: if this felt obvious, the lattice is in your hands. If it didn’t, the hints are still honest.",
@@ -976,7 +991,8 @@ export const lateLevels: Level[] = [
     narrator: "wren",
     story:
       "Dusk. The convoy is on the horizon. Stamp the working harbor: head across four, then nav | dock | dock | crane, then foot across four. Columns 60px 1fr 1fr 72px. Rows 48px 1fr 48px. Gap 8px. Named areas. When it matches the plan, Nimbus Reach opens.",
-    objective: "Holy-grail four-column named shell with gap. The finale.",
+    objective:
+      "The finale: the four-column shell drawn as a district map — head and foot spanning the width, nav and crane on the flanks, the hold covering the two middle bays — with water between every district.",
     items: [
       u("head", "beacon", "Head", "head"),
       u("nav", "sail", "Nav", "nav"),
@@ -987,9 +1003,9 @@ export const lateLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 60px 1fr 1fr 72px;\n  grid-template-rows: 48px 1fr 48px;\n}\n`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 60px 1fr 1fr 72px;\n  grid-template-rows: 48px 1fr 48px;\n  gap: 8px;\n  grid-template-areas:\n    "head head head head"\n    "nav  dock dock crane"\n    "foot foot foot foot";\n}\n.head { grid-area: head; }\n.nav { grid-area: nav; }\n.dock { grid-area: dock; }\n.crane { grid-area: crane; }\n.foot { grid-area: foot; }`,
     hints: [
-      "You have drawn this picture before. Add the gap this time.",
-      "dock dock in the middle row is the two-track hold.",
-      "Four names across head and foot; nav dock dock crane in the middle.",
+      "You have drawn this picture before; the clearance is what is new.",
+      "grid-template-areas, grid-area claims, and gap.",
+      "Shape: three quoted rows of four names; head and foot repeat one name four times, and the middle row repeats the hold twice.",
     ],
     explanation:
       "The working harbor is a named shell with honest gutters. That’s Grid in production: tracks, areas, gap, and no magic.",

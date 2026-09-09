@@ -34,11 +34,11 @@ It is original. It is not Grid Critters, not an alien/space-critter story, and n
 
 ## Run
 
-Dev server (not port 3000):
+Dev server (not port 3000). `vite.config.ts` pins the host, port, and the `*.e2b.app` preview host, so a bare `npm run dev` is enough:
 
 ```bash
 npm install
-npx vite --port 5420
+npm run dev
 ```
 
 Build:
@@ -47,6 +47,8 @@ Build:
 npm run build
 npm run preview -- --port 5420
 ```
+
+The build is a single self-contained `dist/index.html` (art is imported from `src/assets` and inlined), so it can be opened or hosted anywhere.
 
 Progress is stored in `localStorage` under `skydock-progress-v1`.
 
@@ -65,6 +67,16 @@ A level object needs:
 - `difficulty` — `tutorial` | `practice` | `challenge` | `review` | `boss`
 - Optional: `itemStyle: "token"` for cell-alignment drills, `requireCSS`, `forbidCSS`, `boardHeight`
 
+Write the `objective` as the visible result — what the player should see on the Goal dock, dimensions included — not as the CSS to type. The only exception is a berth that mandates a specific tool (`requireCSS`), which may name that tool but never its values.
+
+Hints escalate in three rungs:
+
+1. a conceptual nudge, no property name;
+2. the likely CSS tool (naming the property is the point of this rung);
+3. the shape of the syntax with placeholders, or a near-miss example (`1fr 1fr 1fr` when the berth wants two), never the reference solution.
+
+The optional **Useful tool** reveal under the goal is derived from the level data by `usefulToolsForLevel` (`src/engine/level-tools.ts`): the property names the reference solution adds to the starter CSS. Values are never shown, so there is nothing to keep in sync when a solution changes.
+
 Validation compares item bounding boxes of Your dock vs Goal dock (with a few pixels of tolerance) and then applies any `requireCSS` / `forbidCSS` needles. Prefer checking layout so `grid-column: 1 / 3` and `span 2` from line 1 can both pass.
 
 ## Pedagogy
@@ -72,6 +84,8 @@ Validation compares item bounding boxes of Your dock vs Goal dock (with a few pi
 Each berth: story → goal → write CSS → live preview → check → hints → reveal → why it worked → persist.
 
 Review and boss levels mix earlier tools. After eight clears, the harbor chart offers a **Rerig drill** (random previously passed level).
+
+The **Harbor glossary** (`src/data/harbor-glossary.ts`, rendered by `src/components/HarborGlossary.tsx`) is the only reference screen: searchable, unlocked by shift, one entry per term with a plain-language definition, a compact example, and when to use it. Add new terms there rather than starting a second reference.
 
 ## Note on IP
 

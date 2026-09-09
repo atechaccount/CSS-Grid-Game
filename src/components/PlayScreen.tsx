@@ -2,11 +2,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { art } from "../assets/art";
 import { chapters } from "../data/chapters";
 import { getNextLevel, levelsForChapter } from "../data/levels";
+import { usefulToolsForLevel } from "../engine/level-tools";
 import { checkLevel } from "../engine/validate";
 import type { Level, Progress } from "../types";
+import { useMediaQuery } from "../utils/useMediaQuery";
 import { CssEditor } from "./CssEditor";
-import { Cheatsheet } from "./Cheatsheet";
 import { GridPreview } from "./GridPreview";
+import { HarborGlossary } from "./HarborGlossary";
+
+/** Which dock preview is on screen: one at a time, or both for side-by-side comparison. */
+type PaneMode = "yours" | "goal" | "both";
 
 export function PlayScreen({
   level,
@@ -34,8 +39,15 @@ export function PlayScreen({
   const [showSolution, setShowSolution] = useState(false);
   const [showLesson, setShowLesson] = useState(!progress.seenLessons.includes(level.chapter));
   const [showSheet, setShowSheet] = useState(false);
-  const [pane, setPane] = useState<"yours" | "goal" | "both">("both");
+  const [showTools, setShowTools] = useState(false);
+  const [paneChoice, setPaneChoice] = useState<PaneMode | null>(null);
+  const [expanded, setExpanded] = useState<Exclude<PaneMode, "both"> | null>(null);
+  const isWide = useMediaQuery("(min-width: 981px)");
+  // An explicit Yours/Goal/Both choice always wins; otherwise wide viewports get both docks and
+  // narrow ones get the player's own dock, because two docks side by side stop being readable.
+  const pane: PaneMode = paneChoice ?? (isWide ? "both" : "yours");
   const already = progress.completed.includes(level.id);
+  const usefulTools = useMemo(() => usefulToolsForLevel(level), [level]);
 
   useEffect(() => {
     setCss(progress.drafts[level.id] ?? level.starterCSS);
@@ -43,6 +55,8 @@ export function PlayScreen({
     setMessages([]);
     setPassed(false);
     setShowSolution(false);
+    setShowTools(false);
+    setExpanded(null);
     setShowLesson(!progress.seenLessons.includes(level.chapter));
   }, [level.id]);
 
@@ -55,6 +69,7 @@ export function PlayScreen({
       if (e.key === "Escape") {
         setShowLesson(false);
         setShowSheet(false);
+        setExpanded(null);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -64,6 +79,7 @@ export function PlayScreen({
   const overlay = progress.overlay;
   const narratorSrc = level.narrator === "pip" ? art.pip : art.captainWren;
   const narratorName = level.narrator === "pip" ? "Pip, junior rigger" : "Captain Wren";
+  const singlePane = pane !== "both";
 
   const patch = (partial: Partial<Progress>) => {
     onProgress({ ...progress, ...partial });
@@ -183,7 +199,7 @@ export function PlayScreen({
           </select>
         </label>
         <button type="button" className="btn-ghost" onClick={() => setShowSheet(true)}>
-          Cheatsheet
+          Glossary
         </button>
         <button type="button" className="btn-ghost" onClick={() => setShowLesson(true)}>
           Lesson
@@ -203,13 +219,44 @@ export function PlayScreen({
           <div className="brief-goal">
             <h2>Goal</h2>
             <p>{level.objective}</p>
+            <div className="brief-tools">
+              <button
+                type="button"
+                className="btn-ghost tool-toggle"
+                aria-expanded={showTools}
+                onClick={() => setShowTools((on) => !on)}
+              >
+                {showTools ? "Hide useful tool" : "Useful tool"}
+              </button>
+              {showTools ? (
+                <p className="tool-reveal">
+                  {usefulTools.length > 0 ? (
+                    <>
+                      The plan turns on{" "}
+                      {usefulTools.map((tool, i) => (
+                        <span key={tool}>
+                          {i > 0 ? " and " : ""}
+                          <code>{tool}</code>
+                        </span>
+                      ))}
+                      . No values — that part is still yours.
+                    </>
+                  ) : (
+                    <>
+                      Everything you need is already in the starter CSS. This berth is about
+                      changing what is there.
+                    </>
+                  )}
+                </p>
+              ) : null}
+            </div>
           </div>
         </div>
 
         <div className="editor-card">
           <div className="editor-card-head">
-            <label htmlFor="css-editor">Harbor CSS</label>
-            <span>Ctrl/Cmd + Enter checks</span>
+            <span className="editor-card-label">Harbor CSS</span>
+            <span className="editor-card-keys">Ctrl/Cmd + Enter checks · Esc releases the keyboard</span>
           </div>
           <CssEditor value={css} onChange={updateCss} onRun={runCheck} />
           <div className="editor-actions">
@@ -238,7 +285,7 @@ export function PlayScreen({
             </ol>
           ) : null}
           {messages.length > 0 && !passed ? (
-            <ul className="fail-list">
+            <ul className="fail-list" role="status">
               {messages.map((m) => (
                 <li key={m}>{m}</li>
               ))}
@@ -258,16 +305,19 @@ export function PlayScreen({
 
       <section className="play-stage">
         <div className="stage-tools">
-          <div className="pane-toggle" role="tablist" aria-label="Dock panes">
-            <button type="button" className={pane === "yours" ? "is-on" : ""} onClick={() => setPane("yours")}>
-              Yours
-            </button>
-            <button type="button" className={pane === "goal" ? "is-on" : ""} onClick={() => setPane("goal")}>
-              Goal
-            </button>
-            <button type="button" className={pane === "both" ? "is-on" : ""} onClick={() => setPane("both")}>
-              Both
-            </button>
+          <div className="pane-toggle" role="tablist" aria-label="Which dock to show">
+            {(["yours", "goal", "both"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                role="tab"
+                aria-selected={pane === mode}
+                className={pane === mode ? "is-on" : ""}
+                onClick={() => setPaneChoice(mode)}
+              >
+                {mode === "yours" ? "Yours" : mode === "goal" ? "Goal" : "Both"}
+              </button>
+            ))}
           </div>
           <div className="overlay-toggles">
             <label>
@@ -302,25 +352,41 @@ export function PlayScreen({
             </label>
           </div>
         </div>
-        <div className={`stage-panes is-${pane}`}>
-          <GridPreview
-            id="player-dock"
-            title="Your dock"
-            caption="Live preview of your CSS"
-            css={css}
-            level={level}
-            overlay={overlay}
-            rootRef={playerRef}
-          />
-          <GridPreview
-            id="goal-dock"
-            title="Goal dock"
-            caption="Match this berth plan"
-            css={level.solutionCSS}
-            level={level}
-            overlay={overlay}
-            rootRef={goalRef}
-          />
+        {/*
+          Both docks stay mounted at the same width even when only one is on screen:
+          validation measures the hidden dock too, so it must be laid out, never display: none.
+        */}
+        <div className={`stage-panes ${singlePane ? "is-single" : "is-both"}`}>
+          <div
+            className={`preview-slot ${singlePane && pane !== "yours" ? "is-offscreen" : ""}`}
+            aria-hidden={singlePane && pane !== "yours"}
+          >
+            <GridPreview
+              id="player-dock"
+              title="Your dock"
+              caption="Live preview of your CSS"
+              css={css}
+              level={level}
+              overlay={overlay}
+              rootRef={playerRef}
+              onExpand={() => setExpanded("yours")}
+            />
+          </div>
+          <div
+            className={`preview-slot ${singlePane && pane !== "goal" ? "is-offscreen" : ""}`}
+            aria-hidden={singlePane && pane !== "goal"}
+          >
+            <GridPreview
+              id="goal-dock"
+              title="Goal dock"
+              caption="Match this berth plan"
+              css={level.solutionCSS}
+              level={level}
+              overlay={overlay}
+              rootRef={goalRef}
+              onExpand={() => setExpanded("goal")}
+            />
+          </div>
         </div>
         <p className="stage-concepts">
           {level.concepts.join(" · ")}
@@ -328,8 +394,44 @@ export function PlayScreen({
         </p>
       </section>
 
+      {expanded ? (
+        <div
+          className="preview-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={expanded === "yours" ? "Your dock, expanded" : "Goal dock, expanded"}
+        >
+          <div className="preview-overlay-bar">
+            <p className="map-kicker">{expanded === "yours" ? "Your dock" : "Goal dock"}</p>
+            <div className="preview-overlay-actions">
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => setExpanded(expanded === "yours" ? "goal" : "yours")}
+              >
+                {expanded === "yours" ? "Show goal" : "Show yours"}
+              </button>
+              <button type="button" className="btn-brass" onClick={() => setExpanded(null)}>
+                Close
+              </button>
+            </div>
+          </div>
+          <div className="preview-overlay-stage">
+            <GridPreview
+              id={expanded === "yours" ? "player-dock-expanded" : "goal-dock-expanded"}
+              title={expanded === "yours" ? "Your dock" : "Goal dock"}
+              caption={expanded === "yours" ? "Live preview of your CSS" : "Match this berth plan"}
+              css={expanded === "yours" ? css : level.solutionCSS}
+              level={level}
+              overlay={overlay}
+              boardWidth={680}
+            />
+          </div>
+        </div>
+      ) : null}
+
       {passed ? (
-        <div className="modal-backdrop" role="dialog" aria-labelledby="pass-title">
+        <div className="modal-backdrop" role="dialog" aria-labelledby="pass-title" aria-modal="true">
           <div className="modal-card">
             <p className="map-kicker">Berth cleared</p>
             <h2 id="pass-title">{level.title}</h2>
@@ -352,7 +454,7 @@ export function PlayScreen({
       ) : null}
 
       {showLesson ? (
-        <div className="modal-backdrop" role="dialog" aria-labelledby="lesson-title">
+        <div className="modal-backdrop" role="dialog" aria-labelledby="lesson-title" aria-modal="true">
           <div className="modal-card lesson-card">
             <p className="map-kicker">{chapter.shift}</p>
             <h2 id="lesson-title">{chapter.lessonTitle}</h2>
@@ -375,7 +477,7 @@ export function PlayScreen({
       ) : null}
 
       {showSheet ? (
-        <Cheatsheet
+        <HarborGlossary
           unlockedChapter={progress.unlockedChapter}
           onClose={() => setShowSheet(false)}
         />

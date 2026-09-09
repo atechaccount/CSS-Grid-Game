@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
 import type { Level, OverlaySettings } from "../types";
 import { parsePxTracks, sanitizeAndScope } from "../engine/css";
 import { DockItem } from "./DockItem";
@@ -7,8 +7,8 @@ const BASE = `
 .harbor {
   box-sizing: border-box;
   width: 100%;
-  height: 100%;
-  min-height: 0;
+  /* A minimum, not a fixed height: a ghost deck created by overflow grows the board instead of being clipped. */
+  min-height: var(--dock-board-height, 260px);
   overflow: hidden;
   padding: 10px;
   background:
@@ -97,6 +97,8 @@ export function GridPreview({
   overlay,
   caption,
   rootRef,
+  onExpand,
+  boardWidth,
 }: {
   id: string;
   title: string;
@@ -105,12 +107,20 @@ export function GridPreview({
   overlay: OverlaySettings;
   caption?: string;
   rootRef?: RefObject<HTMLDivElement | null>;
+  /** Opens this dock in the full-screen compare overlay. Omitted when already expanded. */
+  onExpand?: () => void;
+  /** Widest the board may grow in px; the board shrinks below that to fit its pane. Default 360. */
+  boardWidth?: number;
 }) {
   const harborRef = useRef<HTMLDivElement>(null);
   const [tracks, setTracks] = useState<OverlayState | null>(null);
   const itemStyle = level.itemStyle ?? "fill";
   const height = level.boardHeight ?? 260;
   const scoped = sanitizeAndScope(css, id);
+  const rootStyle = {
+    "--dock-board-height": `${height}px`,
+    ...(boardWidth ? { "--dock-board-size": `${boardWidth}px` } : null),
+  } as CSSProperties;
 
   useEffect(() => {
     const el = harborRef.current;
@@ -143,11 +153,18 @@ export function GridPreview({
   return (
     <section className="preview-card" aria-label={title}>
       <header className="preview-head">
-        <h3>{title}</h3>
-        {caption ? <p>{caption}</p> : null}
+        <div className="preview-head-copy">
+          <h3>{title}</h3>
+          {caption ? <p>{caption}</p> : null}
+        </div>
+        {onExpand ? (
+          <button type="button" className="btn-ghost preview-expand" onClick={onExpand}>
+            Expand
+          </button>
+        ) : null}
       </header>
-      <div className="preview-stage" style={{ height }}>
-        <div id={id} className="preview-root" ref={rootRef}>
+      <div className="preview-stage">
+        <div id={id} className="preview-root" ref={rootRef} style={rootStyle}>
           <style>{`${BASE}\n${scoped}`}</style>
           <div
             ref={harborRef}

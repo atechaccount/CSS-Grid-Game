@@ -54,6 +54,11 @@ export interface Level {
   requireCSS?: string[];
   forbidCSS?: string[];
   boardWidth?: number;
+  /**
+   * Minimum dock board height in px (default 260). Both the player's dock and the goal dock use
+   * the same value, so layout checks compare like with like. The board grows past this when
+   * implicit tracks overflow the plan instead of clipping them.
+   */
   boardHeight?: number;
 }
 
