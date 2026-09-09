@@ -22,6 +22,13 @@ export default defineConfig(({ command }) => ({
   // The dev server always serves from the root; only builds are deployed under a subpath.
   base: command === "build" ? skydockBasePath : "/",
   plugins: [react(), tailwindcss(), viteSingleFile()],
+  server: {
+    host: "0.0.0.0",
+    port: 5420,
+    strictPort: true,
+    // Allow the sandboxed preview host (*.e2b.app) so the dev server can be proxied to a browser.
+    allowedHosts: [".e2b.app"],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),

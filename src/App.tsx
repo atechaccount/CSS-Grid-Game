@@ -109,16 +109,24 @@ function HowTo({ onBack }: { onBack: () => void }) {
             <strong>Goal dock</strong>.
           </li>
           <li>
-            Write real CSS in the editor. The live preview updates as you type. Tab inserts two
-            spaces. Ctrl/Cmd+Enter runs a check.
+            Write real CSS in the editor. The live preview updates as you type. Tab indents two
+            spaces, Shift+Tab outdents, Ctrl/Cmd+Z undoes, and Ctrl/Cmd+Enter runs a check. Press
+            Esc inside the editor to hand the keyboard back to the page.
           </li>
           <li>
             Check dock compares layout, not a single exact string — equivalent CSS (for example{" "}
             <code>1fr 1fr 1fr</code> vs <code>repeat(3, 1fr)</code>) can pass unless the berth
             asks for a specific function.
           </li>
-          <li>Hints escalate. Reveal shows a reference solution and why it works.</li>
-          <li>Progress is saved in this browser. The cheatsheet unlocks as you advance.</li>
+          <li>
+            Hints escalate: a nudge, then the likely tool, then the shape of the syntax. The
+            optional <strong>Useful tool</strong> button under the goal names the property without
+            the value.
+          </li>
+          <li>
+            On a narrow screen, switch between Your dock and the Goal dock, or expand either one
+            full screen. Progress is saved in this browser; the glossary unlocks as you advance.
+          </li>
         </ol>
         <p>
           Toggle lines and numbers on the dock when you need to count grid lines. They start at 1,

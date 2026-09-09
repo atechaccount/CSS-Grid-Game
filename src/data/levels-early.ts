@@ -19,14 +19,15 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "First watch. The Lattice Yard is a pile, not a port. Four supply crates stacked like a chimney. Pip already tried float. We do not speak of that afternoon.",
-    objective: "Turn .harbor into a grid with two equal columns so the crates sit two-by-two.",
+    objective:
+      "Berth the four crates two-by-two — a square stack of two equal columns, exactly like the Goal dock.",
     items: crates(4),
     starterCSS: `.harbor {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n}`,
     hints: [
-      "A grid only starts when the container’s display is grid.",
-      "After that, cut two vertical tracks with grid-template-columns.",
-      "Two equal flexible tracks: 1fr 1fr.",
+      "A container only behaves like a lattice when you say so: turn the harbor’s display into a grid.",
+      "Then cut the dock into columns with grid-template-columns.",
+      "List one share per column, space-separated. Three berths would be 1fr 1fr 1fr; this dock wants two.",
     ],
     explanation:
       "display: grid creates a grid formatting context. grid-template-columns: 1fr 1fr cuts two equal columns. Four items auto-place row by row into a 2×2.",
@@ -43,7 +44,8 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Captain Wren wants the patrol balloons in a single rank. One row, three equal berths. If they overlap, I have to climb the rigging. Please don’t make me climb the rigging.",
-    objective: "Lay out three equal columns so each balloon takes its own berth.",
+    objective:
+      "Give Port, Mid, and Star an equal berth each in a single rank — three equal columns, like the Goal dock.",
     items: [
       u("a", "balloon", "Port"),
       u("b", "balloon", "Mid"),
@@ -52,9 +54,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n}`,
     hints: [
-      "The harbor is already a grid — it just has one implicit column.",
-      "grid-template-columns defines how many vertical tracks you get.",
-      "Three equal shares: 1fr 1fr 1fr.",
+      "The harbor is already a grid, but with no column plan it stacks every balloon into one implicit column.",
+      "grid-template-columns decides how many vertical tracks you get.",
+      "Write one 1fr per berth, space-separated. Two berths would be 1fr 1fr; this rank needs three.",
     ],
     explanation:
       "Without a column template, Grid makes one column and stacks items. Three 1fr tracks give each balloon an equal berth in the first row.",
@@ -71,7 +73,8 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Four signal beacons. I will not watch you type 1fr four times like a clerk with a broken stamp. There is a function for this. Use it.",
-    objective: "Create four equal columns using repeat().",
+    objective:
+      "Four equal columns, one beacon each — and ring the yard bell: write the track list with repeat().",
     items: [
       u("a", "beacon", "N"),
       u("b", "beacon", "E"),
@@ -81,9 +84,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n}`,
     hints: [
-      "repeat(count, track) expands to a track list.",
-      "You want four copies of a 1fr track.",
-      "grid-template-columns: repeat(4, 1fr);",
+      "You can already write four equal tracks by hand. The bell wants the function that stamps a track for you.",
+      "repeat(count, track) lives inside grid-template-columns.",
+      "Shape: repeat(<count>, <track>). repeat(2, 1fr) is two columns; count the beacons instead.",
     ],
     explanation:
       "repeat(4, 1fr) is identical to 1fr 1fr 1fr 1fr. The function keeps large templates honest and readable.",
@@ -101,7 +104,8 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Hangar Three is greedy — it needs twice the width of the clerk’s hut. Same row, two tracks. If you give them 1fr 1fr, the hangar sulks.",
-    objective: "Two columns where the hangar track is twice the hut track: 1fr 2fr.",
+    objective:
+      "Hangar Three takes twice the width of the clerk’s hut, both in the first row — match the Goal dock’s uneven split.",
     items: [
       u("hut", "platform", "Hut"),
       u("hangar", "hangar", "Hangar"),
@@ -109,9 +113,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 2fr;\n}`,
     hints: [
-      "fr is a share, not a pixel. 2fr is two shares.",
-      "First track (hut) should be one share; hangar two.",
-      "grid-template-columns: 1fr 2fr;",
+      "Flexible tracks are shares of leftover space, so an uneven split is just uneven shares.",
+      "Weight those shares in grid-template-columns.",
+      "One share per column: 1fr 3fr is a one-to-three split; this berth is one-to-two.",
     ],
     explanation:
       "Free space is split into three shares. The hut takes one, the hangar two. That’s 1/3 and 2/3 of the dock.",
@@ -128,7 +132,8 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Two loading platforms, one above the other. Columns are for the faint of heart. Cut rows.",
-    objective: "One-column grid with two equal rows.",
+    objective:
+      "Two platforms stacked one above the other, each taking half the dock’s height — one column, two equal rows.",
     items: [
       u("a", "platform", "Upper"),
       u("b", "platform", "Lower"),
@@ -136,9 +141,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-rows: 1fr 1fr;\n}`,
     hints: [
-      "Rows are the horizontal tracks, set with grid-template-rows.",
-      "You still have the default single column — that’s fine.",
-      "grid-template-rows: 1fr 1fr;",
+      "Nothing stacks on purpose until you plan the horizontal tracks; left alone, Grid adds rows only as cargo demands.",
+      "grid-template-rows plans the horizontal tracks.",
+      "Same grammar as columns, other axis: two equal shares for two equal decks.",
     ],
     explanation:
       "With one implicit column, two items stack. Explicit equal rows split the harbor height in half instead of sizing to content.",
@@ -155,14 +160,15 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Now both axes. Three crate bays across, two decks down. Six crates. If they spill into a third row, Wren will notice.",
-    objective: "Explicit 3×2 grid with equal fr tracks on both axes.",
+    objective:
+      "Six crates in a 3×2 lattice — three equal columns and two equal rows, matching the Goal dock.",
     items: crates(6),
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n}`,
     hints: [
-      "Set columns and rows. Neither is implied by the other.",
-      "Three equal columns, two equal rows.",
-      "grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr;",
+      "Columns and rows are planned separately; setting one says nothing about the other.",
+      "You need both templates: grid-template-columns and grid-template-rows.",
+      "Two track lists — three equal shares across, two equal shares down.",
     ],
     explanation:
       "You now have an explicit 3×2 lattice. Six items fill it exactly. Explicit rows make each deck equal height even if crate labels differ.",
@@ -179,14 +185,15 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Pip wrote 1fr six times and called it craft. Repeat works on rows too. Four by two. Move.",
-    objective: "Use repeat() for four columns and two rows of equal fr tracks.",
+    objective:
+      "Eight beacons in four equal columns and two equal rows, rung with the bell: repeat() on both axes.",
     items: crates(8),
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: repeat(2, 1fr);\n}`,
     hints: [
-      "repeat() is legal in both template properties.",
-      "Four column tracks, two row tracks.",
-      "repeat(4, 1fr) and repeat(2, 1fr).",
+      "The bell works on either axis — a repeated track list is legal wherever a track list is.",
+      "Put repeat() inside grid-template-columns and inside grid-template-rows.",
+      "Shape: repeat(<count>, <track>) — count the beacons across for one axis and down for the other.",
     ],
     explanation:
       "repeat() is just list expansion. Using it on both axes keeps a 4×2 crate wall from turning into a typing exercise.",
@@ -204,7 +211,7 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Fixed-width beacons on the edges, a stretchy berth in the middle for the Skywhale. The beacons are 72px of brass and stubbornness.",
-    objective: "Columns: 72px, 1fr, 72px — beacons flanking a flexible berth.",
+    objective: "Two narrow 72px beacon berths on the flanks, with a flexible berth filling the middle.",
     items: [
       u("w", "beacon", "West"),
       u("ship", "airship", "Skywhale"),
@@ -213,9 +220,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 72px 1fr 72px;\n}`,
     hints: [
-      "You can mix px and fr in one track list.",
-      "The middle track should eat leftover space.",
-      "grid-template-columns: 72px 1fr 72px;",
+      "A track list can mix units: fixed measurements and flexible shares side by side.",
+      "Write that mixed list in grid-template-columns.",
+      "Order matters — flank, middle, flank: two fixed widths with one flexible track between them.",
     ],
     explanation:
       "Fixed tracks are reserved first. Whatever width remains goes to 1fr. That’s why the Skywhale grows and the beacons don’t.",
@@ -232,7 +239,7 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "A short instrument row over a deep cargo deck. Four equal bays. The strip is 56px; the deck takes the rest. Review what you’ve got.",
-    objective: "Four equal columns. Two rows: 56px then 1fr.",
+    objective: "Four equal bays, with a 56px control strip above one flexible deck.",
     items: [
       u("a", "engine", "A"),
       u("b", "engine", "B"),
@@ -246,9 +253,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 56px 1fr;\n}`,
     hints: [
-      "Columns are a repeated equal track. Rows are mixed units.",
-      "First row 56px, second row 1fr.",
-      "repeat(4, 1fr) plus grid-template-rows: 56px 1fr;",
+      "Both axes and both unit types in one berth: a stamped list on one, fixed plus flexible on the other.",
+      "grid-template-columns for the bays, grid-template-rows for the decks.",
+      "Columns are one repeated equal track; rows are two values, the fixed strip first.",
     ],
     explanation:
       "A classic chrome + canvas cut: a definite instrument row, then a flexible hold. Eight items fill the 4×2 exactly.",
@@ -265,7 +272,7 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Storm debris is cleared. Show me a five-bay yard, two decks, equal bays, equal decks. If you can stamp it with repeat(), the Yard is yours.",
-    objective: "repeat(5, 1fr) columns and repeat(2, 1fr) rows.",
+    objective: "Ten units in five equal columns and two equal rows, built with the bell.",
     items: [
       u("a", "crate", "A"),
       u("b", "barrel", "B"),
@@ -281,9 +288,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(5, 1fr);\n  grid-template-rows: repeat(2, 1fr);\n}`,
     hints: [
-      "Ten units. Five across, two down.",
-      "Both axes can use repeat() with 1fr.",
-      "repeat(5, 1fr) and repeat(2, 1fr).",
+      "Ten units, five across and two down — work the counts out before you type.",
+      "Both grid-template-columns and grid-template-rows can be stamped with repeat().",
+      "Two stamped lists of equal shares: one counts across, one counts down.",
     ],
     explanation:
       "A 5×2 explicit grid is just the Chapter 1 tools composed. No placement tricks yet — auto-flow is enough when the cell count matches the cargo.",
@@ -302,14 +309,14 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Crates kissing is how fingers get crushed. Wren wants a 12px aisle both ways. Not margin. Gap.",
-    objective: "Keep the 2×2 grid and add a 12px gap on both axes.",
+    objective: "Keep the 2×2 lattice and clear a 12px taxiway between the crates, both axes.",
     items: crates(4),
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 12px;\n}`,
     hints: [
-      "gap sits between tracks, not around the outer edge.",
-      "One value sets row-gap and column-gap together.",
-      "gap: 12px;",
+      "Space between tracks is its own concern; padding would shove the whole dock inward instead.",
+      "gap sets both axes with a single value.",
+      "Shape: gap: <size>; — one number clears rows and columns together.",
     ],
     explanation:
       "gap: 12px is the shorthand for matching row and column gutters. The fr tracks shrink to make room — that’s the deal.",
@@ -326,7 +333,7 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Airships need a wide taxiway between columns. Rows can stay snug. column-gap: 28px. Do not fatten the rows “for symmetry.” There is no symmetry in a crosswind.",
-    objective: "Set only column-gap to 28px. Leave rows tight.",
+    objective: "28px of clearance between the columns; the rows stay shoulder to shoulder.",
     items: [
       u("a", "airship", "A"),
       u("b", "airship", "B"),
@@ -336,9 +343,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  column-gap: 28px;\n}`,
     hints: [
-      "There is a property for horizontal gap alone.",
-      "column-gap controls space between vertical tracks.",
-      "column-gap: 28px;",
+      "The two axes clear independently — this berth only needs one of them.",
+      "column-gap is the single-axis property for space between columns.",
+      "Shape: column-gap: <size>; — and leave the row axis alone.",
     ],
     explanation:
       "column-gap affects only the space between columns. row-gap stays 0 (the initial value), so decks stay flush.",
@@ -355,7 +362,7 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "The upper deck drips oil. Give the lower deck 20px of vertical clearance. Columns can stay packed — we’re short on width today.",
-    objective: "row-gap: 20px on the two-row dock.",
+    objective: "20px of clearance between the two decks; leave the columns touching.",
     items: [
       u("a", "platform", "A"),
       u("b", "platform", "B"),
@@ -365,9 +372,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  row-gap: 20px;\n}`,
     hints: [
-      "Vertical space between rows is row-gap.",
-      "Don’t set column-gap or a two-value gap unless asked.",
-      "row-gap: 20px;",
+      "Only the space between decks changes on this berth.",
+      "row-gap is the single-axis property for space between rows.",
+      "Shape: row-gap: <size>; — one value, no column clearance.",
     ],
     explanation:
       "row-gap inserts space between horizontal tracks. Columns remain flush, which is what a width-starved dock wants.",
@@ -384,14 +391,14 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Remember the order or you’ll invent a new kind of accident. gap: <row> <column>. Tight decks (8px), wide bays (22px).",
-    objective: "gap: 8px 22px on the 3×2 crate wall.",
+    objective: "8px between the decks of the crate wall and 22px between its columns.",
     items: crates(6),
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 8px 22px;\n}`,
     hints: [
-      "Two-value gap is row-gap then column-gap.",
-      "Smaller number is the vertical aisle.",
-      "gap: 8px 22px;",
+      "One declaration can carry both axes, but the order is easy to get backwards.",
+      "The two-value form of gap takes row first, then column.",
+      "Shape: gap: <row> <column>; — the smaller number is the deck clearance here.",
     ],
     explanation:
       "The two-value gap shorthand follows the same row/column order as grid-template and the later place-* properties. Row first, then column.",
@@ -408,7 +415,8 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "I set two columns to 50% 50% and added a 16px gap. The last crate fell off the dock. Wren said that’s what percentages deserve. Use fr.",
-    objective: "Two equal columns that still fit after a 16px gap. Use fr, not %.",
+    objective:
+      "Two equal columns that still fit inside the dock after the 16px taxiway is cleared — no cargo over the edge.",
     items: [
       u("a", "crate", "A"),
       u("b", "crate", "B"),
@@ -416,9 +424,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  gap: 16px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 16px;\n  grid-template-columns: 1fr 1fr;\n}`,
     hints: [
-      "50% + 50% + 16px is more than 100%.",
-      "fr shares leftover space after gap is reserved.",
-      "grid-template-columns: 1fr 1fr;",
+      "Half plus half plus the taxiway is more than the dock holds; percentages measure the container, not what is left.",
+      "Flexible shares are divided after the gap is reserved.",
+      "Shape: grid-template-columns: <share> <share>; — equal shares, no percentages.",
     ],
     explanation:
       "Percentages are of the container, not of “what’s left after gap.” fr tracks are. That’s the whole trap.",
@@ -436,7 +444,7 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Hangar still wants twice the hut. Keep 1fr 2fr, but put a 16px gap so crews can walk the seam without climbing cargo.",
-    objective: "Columns 1fr 2fr with gap: 16px.",
+    objective: "The hangar keeps twice the hut’s width, now with 16px of clearance on every axis.",
     items: [
       u("hut", "platform", "Hut"),
       u("hangar", "hangar", "Hangar"),
@@ -444,9 +452,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 2fr;\n  gap: 16px;\n}`,
     hints: [
-      "The weighting from Shift I still applies.",
-      "Add a uniform 16px gap after the columns.",
-      "grid-template-columns: 1fr 2fr; gap: 16px;",
+      "Clearance sits on top of the weighting from Shift I — the shares split whatever the taxiway leaves.",
+      "Keep the weighted track list, then add gap.",
+      "Two declarations: the uneven share list, plus a one-value clearance.",
     ],
     explanation:
       "Gap is reserved first; remaining space is split 1:2. The hangar stays hungrier than the hut, with a walkable seam.",
@@ -463,7 +471,7 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Review drill. Four equal bays, one row, 14px between them. If you reach for margin I will hide the brass caliper.",
-    objective: "repeat(4, 1fr) with a 14px gap.",
+    objective: "Four equal bays with 14px of clearance between them.",
     items: [
       u("a", "barrel", "A"),
       u("b", "barrel", "B"),
@@ -473,9 +481,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  gap: 14px;\n}`,
     hints: [
-      "Stamp four equal columns, then gutter them.",
-      "repeat() still works. gap still works.",
-      "repeat(4, 1fr) and gap: 14px;",
+      "Nothing new here — Shift I’s stamp and Shift II’s taxiway in a single berth.",
+      "A stamped column list, then gap.",
+      "Shape: a repeated equal column list, then a one-value clearance.",
     ],
     explanation:
       "Spaced repetition on purpose: repeat() plus gap is the most common Grid opening move in the wild.",
@@ -492,14 +500,15 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "The Ring wants a 4×2 crate wall, tight decks (10px), wide taxiways (20px). Use the two-value shorthand. No extra poetry.",
-    objective: "repeat(4, 1fr) columns, two 1fr rows, gap: 10px 20px.",
+    objective:
+      "Eight crates in four equal columns and two equal rows, with 10px between decks and 20px between bays.",
     items: crates(8),
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 10px 20px;\n}`,
     hints: [
-      "Four columns, two rows, two-value gap.",
-      "Row gap is the smaller number.",
-      "gap: 10px 20px with repeat(4, 1fr).",
+      "Plan both axes first, then clear two different taxiways in one declaration.",
+      "Stamped track lists on both axes, then the two-value form of gap.",
+      "Two stamped equal lists — four across, two down — plus gap: <row> <column>;.",
     ],
     explanation:
       "Boss check for Shift II: explicit tracks plus directional gap. If the goal dock looks like a proper yard, you shipped it.",
@@ -517,14 +526,15 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "The red balloon is shy. It wants the third of four empty berths, not the first hole auto-placement offers. Nudge it by line number.",
-    objective: "Place the balloon on column line 3 in a 4-column grid.",
+    objective:
+      "The balloon leaves the first berth: it starts on the third column line and still fills a single bay.",
     items: [u("balloon", "balloon", "Shy")],
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr;\n}\n\n.balloon {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr;\n}\n\n.balloon {\n  grid-column-start: 3;\n}`,
     hints: [
-      "Grid lines for four columns are numbered 1–5.",
-      "grid-column-start pins the item’s left edge to a line.",
-      "grid-column-start: 3; (or grid-column: 3;)",
+      "Four columns have five numbered lines, and an item with no orders drifts into the first free cell.",
+      "grid-column-start pins an item’s left edge to a line.",
+      "Shape: grid-column-start: <line>; — count the lines on the Goal dock; the last one is 5.",
     ],
     explanation:
       "Auto-placement would drop the only item in cell 1. grid-column-start: 3 moves it to the third track. The end line defaults to span 1.",
@@ -541,14 +551,14 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "The crane must cover the first two bays. That’s line 1 to line 3 — two tracks, not three. Count the lines on the overlay if you don’t trust me.",
-    objective: "Span the crane from column line 1 to line 3.",
+    objective: "The crane covers the first two bays, from the first column line to the third.",
     items: [u("crane", "crane", "Crane")],
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr;\n}\n\n.crane {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr;\n}\n\n.crane {\n  grid-column: 1 / 3;\n}`,
     hints: [
-      "The end line is exclusive. 1 / 3 covers tracks 1 and 2.",
-      "Shorthand: grid-column: start / end.",
-      "grid-column: 1 / 3;",
+      "The end line is exclusive: line 3 stops at its left edge, so two tracks are covered.",
+      "The grid-column shorthand takes a start and an end.",
+      "Shape: grid-column: <start line> / <end line>; — the crane starts on the very first line.",
     ],
     explanation:
       "grid-column: 1 / 3 is start line 1, end line 3. The crane occupies two columns. 1 / 2 would be a single bay — the classic off-by-one.",
@@ -565,14 +575,14 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "The hangar should cover three bays starting wherever it starts — which is the first cell. Wren says I may use span so I stop counting end lines on my fingers.",
-    objective: "Make the hangar span 3 columns.",
+    objective: "The hangar covers three bays — and the yard wants the span keyword, not two line numbers.",
     items: [u("hangar", "hangar", "Hangar")],
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr;\n}\n\n.hangar {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr;\n}\n\n.hangar {\n  grid-column: span 3;\n}`,
     hints: [
-      "span N means cover N tracks from the start line.",
-      "You can write it in the grid-column shorthand.",
-      "grid-column: span 3;",
+      "Sometimes what matters is how many tracks something covers, not where it starts.",
+      "span says “cover N tracks” without naming a line.",
+      "Shape: grid-column: span <count>; — count the bays the hangar covers on the Goal dock.",
     ],
     explanation:
       "grid-column: span 3 covers three tracks from the auto start (line 1). Equivalent to 1 / 4, but you didn’t have to do the arithmetic.",
@@ -590,7 +600,8 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "The tank needs both decks — a full-height hold on the first bay. Rows have lines too. Use them.",
-    objective: "In a 3×2 grid, make the tank span both rows in the first column.",
+    objective:
+      "The tank holds the whole first column, top deck to bottom deck, with the crates filling in beside it.",
     items: [
       u("tank", "tank", "Tank"),
       u("a", "crate", "A"),
@@ -600,9 +611,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.tank {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.tank {\n  grid-row: 1 / 3;\n}`,
     hints: [
-      "Two rows means three horizontal lines: 1, 2, 3.",
-      "Spanning both rows is grid-row: 1 / 3 or span 2.",
-      "grid-row: 1 / 3;",
+      "Rows have numbered lines too: two decks means three horizontal lines.",
+      "grid-row works exactly like grid-column, on the other axis.",
+      "Shape: grid-row: <start> / <end>; — from the top line to the last one.",
     ],
     explanation:
       "grid-row: 1 / 3 occupies both explicit rows. Auto-placement then drops the crates into the remaining cells, skipping the tank’s occupied first column.",
@@ -619,14 +630,14 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Beacon goes in the top-right corner of a 4×2 yard. That’s columns 4–5 and row 1. I wrote it on my glove so I wouldn’t forget.",
-    objective: "Place the beacon in column 4, row 1 of a 4×2 grid.",
+    objective: "Park the beacon in the starboard corner of the top deck — one bay wide, one deck tall.",
     items: [u("beacon", "beacon", "Beacon")],
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.beacon {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.beacon {\n  grid-column: 4;\n  grid-row: 1;\n}`,
     hints: [
-      "A single line number as grid-column means start there and span 1.",
-      "You need both column and row to pick a corner.",
-      "grid-column: 4; grid-row: 1;",
+      "A corner needs two coordinates: which column, which row.",
+      "grid-column and grid-row each accept a single line number.",
+      "A lone line number means “start here and cover one track” — you need one on each axis.",
     ],
     explanation:
       "grid-column: 4 is shorthand for 4 / auto (span 1). Combined with grid-row: 1, the beacon locks to the top-right cell.",
@@ -643,7 +654,8 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Crane spans the first two bays of row 1. Hangar sits in the last bay, spanning both rows. Two units, two sets of lines. Don’t let them overlap — I like this crane.",
-    objective: "Crane: columns 1–3 on row 1. Hangar: column 4, rows 1–3.",
+    objective:
+      "Crane wide and low across the top deck; hangar tall on the starboard edge. Crates fill in around them.",
     items: [
       u("crane", "crane", "Crane"),
       u("hangar", "hangar", "Hangar"),
@@ -651,9 +663,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.crane {\n  \n}\n\n.hangar {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.crane {\n  grid-column: 1 / 3;\n  grid-row: 1;\n}\n\n.hangar {\n  grid-column: 4;\n  grid-row: 1 / 3;\n}`,
     hints: [
-      "Write rules on .crane and .hangar, not just the harbor.",
-      "Crane is wide and short; hangar is narrow and tall.",
-      "crane: grid-column: 1 / 3; hangar: grid-column: 4; grid-row: 1 / 3;",
+      "Two units, two orders — so the rules belong on the units, not on the harbor.",
+      "grid-column and grid-row, written on .crane and .hangar.",
+      "One rule spans bays; the other pins a column and drops down two decks.",
     ],
     explanation:
       "Two explicit placements can share a grid without fighting if their cells don’t overlap. The leftover cells stay empty — that’s fine.",
@@ -670,14 +682,14 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Span from a middle line this time. The Skywhale starts at column line 2 and covers two bays — so it should end at line 4. I think. Please confirm with CSS, not vibes.",
-    objective: "Skywhale: grid-column: 2 / span 2 (or 2 / 4) on a 4-column dock.",
+    objective: "The skywhale starts in the second bay and covers two bays from there.",
     items: [u("ship", "airship", "Skywhale")],
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr;\n  gap: 8px;\n}\n\n.ship {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr;\n  gap: 8px;\n}\n\n.ship {\n  grid-column: 2 / span 2;\n}`,
     hints: [
-      "You can mix a start line and a span in one shorthand.",
-      "Start at 2, cover two tracks.",
-      "grid-column: 2 / span 2;",
+      "A start line and a span can share one declaration.",
+      "Mix a line number with span inside the grid-column shorthand.",
+      "Shape: grid-column: <start line> / span <count>;.",
     ],
     explanation:
       "2 / span 2 and 2 / 4 describe the same reservation. Mixing a line with span is often the most readable form.",
@@ -694,14 +706,15 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Numbers rot. Names don’t. Cut three columns as [port] 1fr [mid] 1fr [starboard] 1fr [sea] and berth the flagship from port to starboard — leaving the sea column empty.",
-    objective: "Name the lines and place .flagship from port to starboard.",
+    objective:
+      "Name the outer water, then berth the flagship from the port line to the starboard line — no line numbers.",
     items: [u("flagship", "flagship", "Flagship")],
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-rows: 1fr;\n}\n\n.flagship {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: [port] 1fr [mid] 1fr [starboard] 1fr [sea];\n  grid-template-rows: 1fr;\n}\n\n.flagship {\n  grid-column: port / starboard;\n}`,
     hints: [
-      "Name lines in square brackets inside the track list.",
-      "port is the first line; starboard is the start of the last track.",
-      "grid-column: port / starboard covers two tracks.",
+      "Lines can carry names, which read better than magic numbers on a layout that will change.",
+      "Names go in square brackets inside grid-template-columns, and grid-column can then quote them.",
+      "Shape: grid-template-columns: [port] <track> [name] <track> [starboard]; then place the flagship between two of those names.",
     ],
     explanation:
       "Named lines travel with the template. port / starboard reads like a harbor chart and still means “first two tracks.”",
@@ -719,7 +732,8 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Review. Winch in the bottom-left (col 1, row 2). Net spanning the top from line 2 to 5. 4×2 yard, 8px gap.",
-    objective: "Winch at column 1 / row 2. Net at grid-column: 2 / 5 on row 1.",
+    objective:
+      "The winch alone in the bottom-left cell; the net stretched across the last three bays of the top deck.",
     items: [
       u("winch", "winch", "Winch"),
       u("net", "net", "Net"),
@@ -727,9 +741,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.winch {\n  \n}\n\n.net {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.winch {\n  grid-column: 1;\n  grid-row: 2;\n}\n\n.net {\n  grid-column: 2 / 5;\n  grid-row: 1;\n}`,
     hints: [
-      "Winch is a single cell. Net is a three-track span.",
-      "Four columns have end line 5.",
-      "net: 2 / 5, winch: column 1 row 2.",
+      "One unit takes a single cell, the other covers three tracks — and four columns end at line 5.",
+      "grid-column and grid-row, written on the units.",
+      "The net needs a start and an end line; the winch needs one column line and one row line.",
     ],
     explanation:
       "A small two-item puzzle that still needs both start/end thinking and a bottom-left pin. Empty cells are intentional.",
@@ -746,7 +760,8 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Final chart for this office: crane spanning columns 1–3 on row 1, Skywhale in the last column spanning both rows, two crates filling the remaining lower bays by auto-flow. Place the crane and the ship. Let the crates think for themselves.",
-    objective: "Crane: 1 / 3 on row 1. Ship: column 4, rows 1 / 3. Leave crates unplaced.",
+    objective:
+      "Crane wide across the top-left, ship tall on the starboard edge, crates filling whatever is left.",
     items: [
       u("crane", "crane", "Crane"),
       u("ship", "airship", "Skywhale"),
@@ -756,9 +771,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 10px;\n}\n\n.crane {\n  \n}\n\n.ship {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 10px;\n}\n\n.crane {\n  grid-column: 1 / 3;\n  grid-row: 1;\n}\n\n.ship {\n  grid-column: 4;\n  grid-row: 1 / 3;\n}`,
     hints: [
-      "Place only .crane and .ship. Crates auto-fill leftovers.",
-      "Ship is the tall unit on the starboard edge.",
-      "crane 1 / 3 row 1; ship column 4 and row 1 / 3.",
+      "Only two units get orders; the rest of the cargo should still auto-place.",
+      "grid-column and grid-row on .crane and .ship only.",
+      "One spans two bays on the top deck; the other pins the last column and covers both rows.",
     ],
     explanation:
       "Explicit placement + auto-flow is how real pages work. You pin the exceptions; the rest of the cargo sits in what’s left.",
@@ -776,7 +791,8 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "District Hall thinks in maps, not line numbers. Two regions: dock and hangar. Draw them with grid-template-areas.",
-    objective: 'Two columns: areas "dock hangar". Assign each child with grid-area.',
+    objective:
+      "Draw the dock as a labelled map — dock to port, hangar to starboard — and let each unit claim its name.",
     items: [
       u("dock", "platform", "Dock", "dock"),
       u("hangar", "hangar", "Hangar", "hangar"),
@@ -784,9 +800,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 2fr;\n}\n\n.dock {\n  \n}\n\n.hangar {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 2fr;\n  grid-template-areas: "dock hangar";\n}\n\n.dock {\n  grid-area: dock;\n}\n\n.hangar {\n  grid-area: hangar;\n}`,
     hints: [
-      "grid-template-areas takes a quoted string of names per row.",
-      "Each child needs grid-area: <name>.",
-      '"dock hangar" plus grid-area on .dock and .hangar.',
+      "You can sketch the whole layout as a picture of names, one row per line.",
+      "grid-template-areas draws the picture; grid-area makes a child claim a name.",
+      "Shape: one quoted row of two names, then one claim per child.",
     ],
     explanation:
       "The template paints a picture. grid-area on each child is the pin that makes the picture real. Without both halves, nothing happens.",
@@ -804,7 +820,7 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "A three-row shell. Beacon bar across the top, cargo in the middle, winch strip across the foot. Same name twice in a row makes a span.",
-    objective: 'Areas: "head head" / "main main" / "foot foot" with matching grid-area rules.',
+    objective: "Three full-width decks: head on top, hold in the middle, foot at the bottom.",
     items: [
       u("head", "beacon", "Head", "head"),
       u("main", "crate", "Hold", "main"),
@@ -813,9 +829,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 56px 1fr 56px;\n}\n\n.head {\n  \n}\n\n.main {\n  \n}\n\n.foot {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 56px 1fr 56px;\n  grid-template-areas:\n    "head head"\n    "main main"\n    "foot foot";\n}\n\n.head { grid-area: head; }\n.main { grid-area: main; }\n.foot { grid-area: foot; }`,
     hints: [
-      "Each quoted string is one row of the picture.",
-      "Repeating a name horizontally makes that area span those columns.",
-      "Three strings: head head, main main, foot foot.",
+      "A name repeated across a row makes that district span those columns.",
+      "Draw three rows in grid-template-areas, then claim each with grid-area.",
+      "Shape: three quoted rows, each holding the same name twice.",
     ],
     explanation:
       "A name that appears in two adjacent columns becomes a two-column area. That’s how headers span without grid-column math.",
@@ -832,7 +848,8 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Leave a water courtyard. A period (.) in the template is an empty cell — no unit, just sky. Top row: beacon then empty. Bottom: dock spanning both.",
-    objective: 'Areas: "head ." / "dock dock".',
+    objective:
+      "Head on the port side of the top deck, empty water to starboard of it, and the dock stretching under both.",
     items: [
       u("head", "beacon", "Beacon", "head"),
       u("dock", "platform", "Dock", "dock"),
@@ -840,9 +857,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 10px;\n}\n\n.head {\n  \n}\n\n.dock {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 10px;\n  grid-template-areas:\n    "head ."\n    "dock dock";\n}\n\n.head { grid-area: head; }\n.dock { grid-area: dock; }`,
     hints: [
-      "A lone period is an anonymous empty cell.",
-      "Bottom row repeats dock so it spans both columns.",
-      '"head ." and "dock dock".',
+      "A map is allowed a cell that belongs to nobody.",
+      "A lone period inside a grid-template-areas row is an empty cell.",
+      "Shape: two quoted rows — the top one names the head and then leaves a hole; the bottom one repeats a single name.",
     ],
     explanation:
       "Empty cells are first-class in area templates. Use them for whitespace you actually mean, not leftover accidents.",
@@ -860,7 +877,7 @@ export const earlyLevels: Level[] = [
     story:
       "Nav on the port rail, main hold in the center, crane on starboard, head and foot spanning all three. If you can draw it, you can ship it.",
     objective:
-      'Areas: "head head head" / "nav main crane" / "foot foot foot" with 56px / 1fr / 56px rows and 72px 1fr 72px columns.',
+      "The full shell: head and foot spanning the width, nav and crane on the flanks, main in the middle — 56px decks top and bottom, 72px flanks.",
     items: [
       u("head", "beacon", "Head", "head"),
       u("nav", "sail", "Nav", "nav"),
@@ -871,9 +888,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 72px 1fr 72px;\n  grid-template-rows: 56px 1fr 56px;\n  gap: 8px;\n}\n`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 72px 1fr 72px;\n  grid-template-rows: 56px 1fr 56px;\n  gap: 8px;\n  grid-template-areas:\n    "head head head"\n    "nav  main crane"\n    "foot foot foot";\n}\n.head { grid-area: head; }\n.nav { grid-area: nav; }\n.main { grid-area: main; }\n.crane { grid-area: crane; }\n.foot { grid-area: foot; }`,
     hints: [
-      "Five names, three rows of three tokens each.",
-      "Head and foot repeat three times. The middle row is three different names.",
-      "Assign grid-area on every child.",
+      "Five districts over three rows of three cells. Sketch the picture before you write it.",
+      "grid-template-areas for the picture, grid-area for each claim.",
+      "Shape: three quoted rows of three names; head and foot repeat one name three times.",
     ],
     explanation:
       "This is the holy grail layout Grid was born to kill floats for. The picture is the documentation.",
@@ -891,7 +908,8 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Wren says areas are for shells, lines are for one-off spans. Prove the second half: don’t use areas. Span the banner across all three crate columns on row 1.",
-    objective: "3-column grid. Banner spans all columns on row 1. No template-areas.",
+    objective:
+      "Banner across the full width of the top deck with the crates below — and no district map allowed.",
     items: [
       u("banner", "airship", "Banner", "banner"),
       u("a", "crate", "A"),
@@ -901,9 +919,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.banner {\n  \n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n\n.banner {\n  grid-column: 1 / 4;\n}`,
     hints: [
-      "This is a Chapter 3 skill on purpose.",
-      "Three columns end at line 4.",
-      "grid-column: 1 / 4 or span 3.",
+      "This berth is a Shift III skill on purpose: one spanning unit does not need a whole map.",
+      "grid-column can span the banner across every column instead.",
+      "Three columns end at line 4 — span from the first line to the last, or just say how many tracks to cover.",
     ],
     explanation:
       "A single spanned banner inside a card grid is cleaner with lines than by inventing an area template for four items.",
@@ -921,7 +939,7 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Hangar stacked over a tank on the starboard rail, dock taking the port two-thirds on both rows. Draw the rectangle — no L-shapes, the spec will spit it out.",
-    objective: 'Areas: "dock hangar" / "dock tank".',
+    objective: "The dock runs down both decks on the port side, with hangar and tank stacked to starboard.",
     items: [
       u("dock", "platform", "Dock", "dock"),
       u("hangar", "hangar", "Hangar", "hangar"),
@@ -930,9 +948,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 2fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n}\n`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 2fr 1fr;\n  grid-template-rows: 1fr 1fr;\n  gap: 8px;\n  grid-template-areas:\n    "dock hangar"\n    "dock tank";\n}\n.dock { grid-area: dock; }\n.hangar { grid-area: hangar; }\n.tank { grid-area: tank; }`,
     hints: [
-      "dock appears twice in the first column — that’s a vertical span, still a rectangle.",
-      "hangar and tank each get one cell on the right.",
-      '"dock hangar" then "dock tank".',
+      "A district may be tall, as long as it stays a rectangle.",
+      "Repeat the same name down a column in grid-template-areas.",
+      "Shape: two quoted rows of two names, with one name appearing in both rows in the same column.",
     ],
     explanation:
       "A name stacked in a single column is still rectangular. An L (dock on top row both cols AND bottom-left) would be invalid.",
@@ -949,7 +967,8 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Quick shell. Head spanning two, then nav | main. I keep forgetting to assign grid-area. Don’t be me.",
-    objective: 'Areas "head head" / "nav main" with 48px 1fr rows and 90px 1fr columns.',
+    objective:
+      "Head across the top in a 48px strip; below it a 90px nav column to port and main filling the rest.",
     items: [
       u("head", "beacon", "Head", "head"),
       u("nav", "sail", "Nav", "nav"),
@@ -958,9 +977,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 90px 1fr;\n  grid-template-rows: 48px 1fr;\n  gap: 8px;\n}\n`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 90px 1fr;\n  grid-template-rows: 48px 1fr;\n  gap: 8px;\n  grid-template-areas:\n    "head head"\n    "nav  main";\n}\n.head { grid-area: head; }\n.nav { grid-area: nav; }\n.main { grid-area: main; }`,
     hints: [
-      "Two rows of names, then three grid-area assignments.",
-      "Head repeats. Nav and main split the second row.",
-      '"head head" / "nav main".',
+      "Draw the map first, then size the tracks it implies.",
+      "grid-template-areas for the picture, the two template properties for sizes, grid-area for the claims.",
+      "Shape: two quoted rows, two track lists, three claims.",
     ],
     explanation:
       "A compact shell you could paste into a real page. Areas plus a couple of definite tracks.",
@@ -977,7 +996,8 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Stamp the Hall: head across four, then nav + main + main + crane, then foot across four. Columns 64px 1fr 1fr 64px. Rows 48px 1fr 48px. Gap 8px. This is a building, not a sketch.",
-    objective: "Full four-column shell with head, nav, main (span 2), crane, foot.",
+    objective:
+      "Head and foot span the full width; nav and crane hold the flanks; the main hold covers the two middle bays.",
     items: [
       u("head", "beacon", "Head", "head"),
       u("nav", "sail", "Nav", "nav"),
@@ -988,9 +1008,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 64px 1fr 1fr 64px;\n  grid-template-rows: 48px 1fr 48px;\n  gap: 8px;\n}\n`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: 64px 1fr 1fr 64px;\n  grid-template-rows: 48px 1fr 48px;\n  gap: 8px;\n  grid-template-areas:\n    "head head head head"\n    "nav  main main crane"\n    "foot foot foot foot";\n}\n.head { grid-area: head; }\n.nav { grid-area: nav; }\n.main { grid-area: main; }\n.crane { grid-area: crane; }\n.foot { grid-area: foot; }`,
     hints: [
-      "Four tokens per quoted row.",
-      "main main in the middle row makes a two-column hold.",
-      "Assign all five grid-area names.",
+      "Four cells per row and five districts — the middle row repeats one name twice.",
+      "grid-template-areas over three rows, then a claim for every district.",
+      "Shape: three quoted rows of four names; head and foot repeat one name four times.",
     ],
     explanation:
       "A complete named shell. If you can read the quotes out loud as a map, the CSS is doing its job.",
@@ -1009,7 +1029,7 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "Three crate bays that can grow, but never thinner than 80px. Wren called it minmax. I called it “finally.”",
-    objective: "Three columns of minmax(80px, 1fr).",
+    objective: "Three equal bays that share the leftover width but refuse to shrink below 80px each.",
     items: [
       u("a", "crate", "A"),
       u("b", "crate", "B"),
@@ -1018,9 +1038,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  grid-template-columns: minmax(80px, 1fr) minmax(80px, 1fr) minmax(80px, 1fr);\n}`,
     hints: [
-      "minmax(min, max) clamps a track.",
-      "You can write it three times or wrap it in repeat().",
-      "repeat(3, minmax(80px, 1fr)) is perfect.",
+      "A flexible track has no floor, so cargo can crush it. You want a floor and a ceiling in one track.",
+      "minmax() clamps a single track — write it inside grid-template-columns.",
+      "Shape: repeat(3, minmax(<floor>, <grow>)) — or write the clamped track out three times.",
     ],
     explanation:
       "Each track is at least 80px and may grow equally. On this dock they’re well above 80, so they behave like 1fr — with a safety net.",
@@ -1038,7 +1058,8 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Port rail at least 100px, at most 1fr. Starboard hold at least 140px, max 2fr. Two tracks, two negotiations.",
-    objective: "minmax(100px, 1fr) minmax(140px, 2fr).",
+    objective:
+      "Two bays with different floors and appetites: the hut floors at 100px, the hold at 140px, and the hold still grows twice as fast.",
     items: [
       u("rail", "sail", "Rail"),
       u("hold", "hangar", "Hold"),
@@ -1046,9 +1067,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  gap: 10px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 10px;\n  grid-template-columns: minmax(100px, 1fr) minmax(140px, 2fr);\n}`,
     hints: [
-      "Each column gets its own minmax().",
-      "The hold is the hungrier max (2fr).",
-      "minmax(100px, 1fr) minmax(140px, 2fr).",
+      "Each track can carry its own clamp — one rule for all of them is not required.",
+      "Two minmax() tracks in one grid-template-columns list.",
+      "Shape: minmax(<floor>, <grow>) minmax(<bigger floor>, <bigger grow>).",
     ],
     explanation:
       "Two minmax tracks still share leftover by their max fr weights, while refusing to collapse below their mins.",
@@ -1066,14 +1087,15 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "We don’t know how wide the loft will be tomorrow. Pack as many 90px-or-bigger bays as fit. auto-fill, not a hard count.",
-    objective: "repeat(auto-fill, minmax(90px, 1fr)) with six crates.",
+    objective:
+      "As many bays at least 90px wide as the shelf can hold — and empty bays still hold their space, so the crates stay their honest size.",
     items: crates(6),
     starterCSS: `.harbor {\n  display: grid;\n  gap: 8px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 8px;\n  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));\n}`,
     hints: [
-      "auto-fill as the repeat count asks Grid to make as many tracks as fit.",
-      "Each track is minmax(90px, 1fr).",
-      "repeat(auto-fill, minmax(90px, 1fr)).",
+      "You do not have to count the tracks; Grid can work the count out from the width you allow.",
+      "auto-fill, as the repeat count, asks for as many tracks as fit.",
+      "Shape: repeat(auto-fill, minmax(<floor>, 1fr)).",
     ],
     explanation:
       "auto-fill computes how many minmax(90px, 1fr) tracks fit in the container, then lays items into them, wrapping extra crates to new rows.",
@@ -1091,7 +1113,8 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Two barrels on a wide dock. auto-fill would leave empty ghost tracks. auto-fit collapses those ghosts so the barrels expand. I want barrels, not ghosts.",
-    objective: "Two items, repeat(auto-fit, minmax(80px, 1fr)).",
+    objective:
+      "Only two units on a wide shelf — they should stretch to fill it, with no ghost berths holding space.",
     items: [
       u("a", "barrel", "A"),
       u("b", "barrel", "B"),
@@ -1099,9 +1122,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  gap: 10px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 10px;\n  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));\n}`,
     hints: [
-      "auto-fill keeps empty tracks. auto-fit collapses them.",
-      "With only two items on a wide dock, fit makes them grow.",
-      "repeat(auto-fit, minmax(80px, 1fr)).",
+      "Two keywords can do the counting, and they disagree about empty tracks.",
+      "auto-fit collapses the tracks nothing landed in; auto-fill keeps them.",
+      "Shape: repeat(auto-fit, minmax(<floor>, 1fr)).",
     ],
     explanation:
       "Both keywords create as many tracks as would fit. auto-fit then collapses empty ones, so leftover space goes to the items that exist.",
@@ -1119,7 +1142,8 @@ export const earlyLevels: Level[] = [
     narrator: "pip",
     story:
       "The label column should hug the word “WINCHES” and not invent extra padding. min-content. The rest of the dock is 1fr of crates.",
-    objective: "grid-template-columns: min-content 1fr.",
+    objective:
+      "The flagship column narrows to the tightest it can be without breaking its longest word; the balloon takes everything else.",
     items: [
       u("label", "winch", "WINCHES", "label"),
       u("hold", "crate", "Hold", "hold"),
@@ -1127,9 +1151,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  gap: 10px;\n}\n`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 10px;\n  grid-template-columns: min-content 1fr;\n}`,
     hints: [
-      "min-content sizes to the longest unbreakable word / item.",
-      "Second track takes the leftover.",
-      "min-content 1fr.",
+      "There is a keyword for “as narrow as the content allows”.",
+      "min-content is a track size, legal inside grid-template-columns.",
+      "Shape: two tracks — the content keyword first, then a flexible track.",
     ],
     explanation:
       "min-content looks at the content’s minimum size (here, the label). That’s a true content-sized track, not a guess in pixels.",
@@ -1147,7 +1171,8 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "The flagship’s nameplate should not wrap. Give it max-content. The balloon can have the leftover 1fr.",
-    objective: "max-content 1fr for flagship then balloon.",
+    objective:
+      "The flagship column is as wide as its content wants without wrapping; the balloon takes the rest.",
     items: [
       u("flagship", "flagship", "Nimbus Queen", "flagship"),
       u("balloon", "balloon", "Spot", "balloon"),
@@ -1155,9 +1180,9 @@ export const earlyLevels: Level[] = [
     starterCSS: `.harbor {\n  display: grid;\n  gap: 10px;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 10px;\n  grid-template-columns: max-content 1fr;\n}`,
     hints: [
-      "max-content is the preferred width — no wrapping.",
-      "Put it on the first track.",
-      "grid-template-columns: max-content 1fr;",
+      "The sibling keyword measures the preferred width — no wrapping, no shrinking.",
+      "max-content is the other content-sized track.",
+      "Shape: content-sized track first, flexible track second.",
     ],
     explanation:
       "max-content sizes to the content’s ideal width. Useful for nameplates, timestamps, and anything uglier when wrapped.",
@@ -1175,14 +1200,15 @@ export const earlyLevels: Level[] = [
     narrator: "wren",
     story:
       "Responsive crate shelf: as many bays as fit, no thinner than 70px, collapsing empty tracks, 8px gap. Eight crates. The loft changes width; the CSS should not care.",
-    objective: "repeat(auto-fit, minmax(70px, 1fr)) with gap: 8px.",
+    objective:
+      "A shelf of bays at least 70px wide that grows to fill the loft, with 8px of clearance between them.",
     items: crates(8),
     starterCSS: `.harbor {\n  display: grid;\n}`,
     solutionCSS: `.harbor {\n  display: grid;\n  gap: 8px;\n  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));\n}`,
     hints: [
-      "Combine auto-fit with minmax and gap.",
-      "70px is the floor; 1fr is the grow.",
-      "repeat(auto-fit, minmax(70px, 1fr)); gap: 8px;",
+      "This is all of Shift V in one berth: counting, clamping, and clearing.",
+      "auto-fit, minmax(), and gap together.",
+      "Shape: repeat(auto-fit, minmax(<floor>, 1fr)) plus a one-value clearance.",
     ],
     explanation:
       "This one-liner is the modern card grid. If you can write it from memory, Shift V is done.",
