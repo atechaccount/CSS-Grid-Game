@@ -26,27 +26,25 @@ describe("progress store", () => {
   it("round-trips a save", () => {
     const progress = defaultProgress();
     progress.completed = ["c1-01", "c1-02"];
-    progress.unlockedChapter = 2;
     progress.drafts = { "c1-01": ".harbor { color: red }" };
     progress.overlay = { lines: false, numbers: true, labels: false };
     saveProgress(progress);
 
     const loaded = loadProgress();
     expect(loaded.completed).toEqual(["c1-01", "c1-02"]);
-    expect(loaded.unlockedChapter).toBe(2);
     expect(loaded.drafts["c1-01"]).toContain("color: red");
     expect(loaded.overlay).toEqual({ lines: false, numbers: true, labels: false });
   });
 
   it("migrates a legacy save written under the un-namespaced key", () => {
-    const legacy = defaultProgress();
-    legacy.completed = ["c1-01", "c1-02", "c1-03"];
-    legacy.unlockedChapter = 2;
+    const legacy = { ...defaultProgress(), unlockedChapter: 2, completed: ["c1-01", "c1-02", "c1-03"] };
     localStorage.setItem("skydock-progress-v1", JSON.stringify(legacy));
 
     const loaded = loadProgress();
     expect(loaded.completed).toEqual(["c1-01", "c1-02", "c1-03"]);
-    expect(loaded.unlockedChapter).toBe(2);
+    // The removed shift-sealing field is dropped on load (and only the next save persists it).
+    expect(loaded).not.toHaveProperty("unlockedChapter");
+    expect(localStorage.getItem("skydock-progress-v1:/")).toBeNull();
   });
 
   it("prefers the namespaced save over a stale legacy copy", () => {

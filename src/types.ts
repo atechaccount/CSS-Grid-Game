@@ -83,7 +83,6 @@ export interface OverlaySettings {
 
 export interface Progress {
   completed: string[];
-  unlockedChapter: number;
   lastLevelId: string | null;
   drafts: Record<string, string>;
   hintsUsed: Record<string, number>;

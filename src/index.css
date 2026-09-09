@@ -265,17 +265,33 @@ a:focus-visible {
 
 .map-card {
   width: 100%;
-  text-align: left;
   min-height: 11.5rem;
-  padding: 1rem 1rem 1.1rem;
-  display: grid;
-  gap: 0.28rem;
-  align-content: start;
+  padding: 1rem 1rem 0.9rem;
+  display: flex;
+  flex-direction: column;
   background: rgba(18, 26, 36, 0.82);
   border: 1px solid rgba(212, 177, 90, 0.28);
   color: var(--paper);
-  cursor: pointer;
   border-radius: 2px;
+}
+
+/* The card's clickable face: opens the shift's next uncleared berth. */
+.map-card-open {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 0.28rem;
+  align-content: start;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.map-card-open:hover strong {
+  color: var(--brass-bright);
 }
 
 .map-card strong {
@@ -310,9 +326,37 @@ a:focus-visible {
   border-color: rgba(90, 160, 120, 0.55);
 }
 
-.map-card.is-locked {
-  opacity: 0.55;
-  cursor: not-allowed;
+/* Numbered berth pills: jump straight to any level on the chart. */
+.map-levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgba(212, 177, 90, 0.16);
+}
+
+.map-level {
+  min-width: 1.7rem;
+  padding: 0.22rem 0.3rem;
+  border: 1px solid rgba(212, 177, 90, 0.34);
+  border-radius: 2px;
+  background: rgba(12, 18, 26, 0.7);
+  color: #c9d3da;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.map-level:hover {
+  border-color: rgba(212, 177, 90, 0.8);
+  color: var(--brass-bright);
+}
+
+.map-level.is-cleared {
+  border-color: rgba(90, 160, 120, 0.6);
+  color: #8fbf9a;
 }
 
 .map-badge {

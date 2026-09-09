@@ -13,7 +13,7 @@ import { setViewport } from "./setup";
 
 /**
  * Stateful harness mirroring how App mounts PlayScreen: it owns the progress state so
- * onProgress patches (drafts, hints, completed, unlocked) actually stick, reports every patch
+ * onProgress patches (drafts, hints, completed, badges) actually stick, reports every patch
  * to a spy, and can be re-rendered at a new level id the way onGoto does.
  */
 function PlayHarness({
@@ -283,7 +283,7 @@ describe("play screen", () => {
     expect(latest.current?.completed).toContain("c1-01");
   });
 
-  it("clearing a shift's last berth awards the badge and unseals the next shift", async () => {
+  it("clearing a shift's last berth awards the badge", async () => {
     const user = userEvent.setup();
     const nearlyDone = defaultProgress();
     nearlyDone.completed = levels.filter((l) => l.chapter === 1 && l.order < 10).map((l) => l.id);
@@ -299,7 +299,7 @@ describe("play screen", () => {
     await user.click(screen.getByRole("button", { name: "Check dock" }));
     expect(screen.getByText("Berth cleared")).toBeTruthy();
     expect(latest.current?.badges).toContain(1);
-    expect(latest.current?.unlockedChapter).toBe(2);
+    expect(latest.current).not.toHaveProperty("unlockedChapter");
   });
 
   it("escalates hints one rung at a time and stops at three", async () => {
@@ -407,14 +407,14 @@ describe("play screen", () => {
 describe("harbor glossary", () => {
   it("searches live, reports the match count, and shows an empty state", async () => {
     const user = userEvent.setup();
-    render(<HarborGlossary unlockedChapter={10} onClose={() => {}} />);
+    render(<HarborGlossary onClose={() => {}} />);
 
     expect(screen.getByRole("status").textContent).not.toContain("sealed");
     await user.type(screen.getByLabelText(/Search terms/), "repeat");
     const count = screen.getByRole("status").textContent!;
-    expect(count).toMatch(/^\d+ of \d+ entries$/);
-    const [matching, total] = count.split(" of ").map((n) => parseInt(n, 10));
-    expect(matching).toBeLessThan(total);
+    expect(count).toMatch(/^\d+ of 22 entries$/);
+    const [matching] = count.split(" of ").map((n) => parseInt(n, 10));
+    expect(matching).toBeLessThan(22);
 
     const search = screen.getByLabelText(/Search terms/);
     await user.clear(search);
@@ -422,15 +422,15 @@ describe("harbor glossary", () => {
     expect(screen.getByText(/No entry answers to/)).toBeTruthy();
   });
 
-  it("seals later-shift entries until the player reaches them", () => {
-    render(<HarborGlossary unlockedChapter={1} onClose={() => {}} />);
-    expect(screen.getByRole("status").textContent).toContain("sealed until later shifts");
+  it("shows the full reference regardless of campaign position", () => {
+    render(<HarborGlossary onClose={() => {}} />);
+    expect(screen.getByRole("status").textContent).toBe("22 of 22 entries");
   });
 
   it("closes from the header", async () => {
     const user = userEvent.setup();
     let closed = false;
-    render(<HarborGlossary unlockedChapter={5} onClose={() => (closed = true)} />);
+    render(<HarborGlossary onClose={() => (closed = true)} />);
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(closed).toBe(true);
   });

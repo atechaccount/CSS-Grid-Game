@@ -1,10 +1,10 @@
 /**
  * Harbor glossary entries — the single reference source for CSS Grid terms in the game.
- * `chapter` gates unlocking: an entry appears only once the player has reached that shift.
+ * `chapter` is provenance only: it records which shift introduces the term; nothing is gated.
  */
 export interface GlossaryEntry {
   id: string;
-  /** Shift that unseals this entry; entries stay hidden until the player reaches it. */
+  /** Shift that introduces this entry; provenance only, entries are never hidden. */
   chapter: number;
   /** Plain-language name shown as the card heading, in harbor voice. */
   title: string;

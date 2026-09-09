@@ -108,10 +108,7 @@ export function PlayScreen({
       const badges = chapterDone && !progress.badges.includes(chapter.id)
         ? [...progress.badges, chapter.id]
         : progress.badges;
-      const unlockedChapter = chapterDone
-        ? Math.max(progress.unlockedChapter, Math.min(10, chapter.id + 1))
-        : progress.unlockedChapter;
-      patch({ completed, badges, unlockedChapter, lastLevelId: level.id });
+      patch({ completed, badges, lastLevelId: level.id });
     } else {
       setPassed(false);
       setMessages(result.messages);
@@ -150,10 +147,6 @@ export function PlayScreen({
       onMap();
       return;
     }
-    if (nxt.chapter > progress.unlockedChapter) {
-      onMap();
-      return;
-    }
     onGoto(nxt.id);
   };
 
@@ -186,16 +179,12 @@ export function PlayScreen({
             onChange={(e) => onGoto(e.target.value)}
             aria-label="Jump to level"
           >
-            {chapterLevels.map((l, idx) => {
-              const prevDone = idx === 0 || progress.completed.includes(chapterLevels[idx - 1].id);
-              const open = prevDone || progress.completed.includes(l.id) || l.id === level.id;
-              return (
-                <option key={l.id} value={l.id} disabled={!open}>
-                  {l.order}. {l.title}
-                  {progress.completed.includes(l.id) ? " ✓" : ""}
-                </option>
-              );
-            })}
+            {chapterLevels.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.order}. {l.title}
+                {progress.completed.includes(l.id) ? " ✓" : ""}
+              </option>
+            ))}
           </select>
         </label>
         <button type="button" className="btn-ghost" onClick={() => setShowSheet(true)}>
@@ -476,12 +465,7 @@ export function PlayScreen({
         </div>
       ) : null}
 
-      {showSheet ? (
-        <HarborGlossary
-          unlockedChapter={progress.unlockedChapter}
-          onClose={() => setShowSheet(false)}
-        />
-      ) : null}
+      {showSheet ? <HarborGlossary onClose={() => setShowSheet(false)} /> : null}
     </div>
   );
 }

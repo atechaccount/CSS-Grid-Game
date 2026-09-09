@@ -9,7 +9,7 @@ function setQuery(query: string): void {
 }
 
 function mapCards(): HTMLButtonElement[] {
-  return [...document.querySelectorAll<HTMLButtonElement>("button.map-card")];
+  return [...document.querySelectorAll<HTMLButtonElement>("button.map-card-open")];
 }
 
 beforeEach(() => {
@@ -31,7 +31,7 @@ describe("app boot", () => {
     expect(saved.lastLevelId).toBe("c1-01");
   });
 
-  it("locks every shift past the first on a fresh save", async () => {
+  it("leaves every shift open on a fresh save, with one pill per berth", async () => {
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole("button", { name: "Take the post" }));
@@ -39,8 +39,25 @@ describe("app boot", () => {
 
     const cards = mapCards();
     expect(cards).toHaveLength(10);
-    expect(cards.filter((c) => c.disabled)).toHaveLength(9);
-    expect(cards[0].disabled).toBe(false);
+    expect(cards.filter((c) => c.disabled)).toHaveLength(0);
+    // 76 berths, one pill each, all clickable straight from the chart.
+    const pills = [...document.querySelectorAll<HTMLButtonElement>("button.map-level")];
+    expect(pills).toHaveLength(76);
+    expect(pills.filter((b) => b.disabled)).toHaveLength(0);
+  });
+
+  it("opens any berth directly from a chart pill", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: "Take the post" }));
+    await user.click(screen.getByRole("button", { name: "Chart" }));
+
+    const finale = document.querySelector<HTMLButtonElement>(
+      'button.map-level[aria-label*="Autumn Convoy"]',
+    );
+    expect(finale, "a pill labelled with the finale title exists").toBeTruthy();
+    await user.click(finale!);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Autumn Convoy");
   });
 
   it("reopens the saved berth and shows 'Resume watch' when a save exists", async () => {
@@ -68,32 +85,24 @@ describe("app boot", () => {
 });
 
 describe("query overrides", () => {
-  it("?unlock=all unseals every shift and persists the unlock", async () => {
-    setQuery("/?unlock=all");
+  it("the chart is fully open without any query parameter", async () => {
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole("button", { name: "Take the post" }));
     await user.click(screen.getByRole("button", { name: "Chart" }));
 
-    const cards = mapCards();
-    expect(cards).toHaveLength(10);
-    expect(cards.filter((c) => c.disabled)).toHaveLength(0);
+    expect(mapCards().filter((c) => c.disabled)).toHaveLength(0);
     expect(screen.queryByText(/Sealed until/)).toBeNull();
 
     const saved = JSON.parse(localStorage.getItem("skydock-progress-v1:/")!);
-    expect(saved.unlockedChapter).toBe(10);
+    expect(saved).not.toHaveProperty("unlockedChapter");
   });
 
-  it("the unlock survives a reload without the query parameter", async () => {
+  it("accepts the legacy ?unlock=all param as a harmless no-op", async () => {
     setQuery("/?unlock=all");
     const user = userEvent.setup();
-    const view = render(<App />);
-    await user.click(screen.getByRole("button", { name: "Take the post" }));
-    view.unmount();
-
-    setQuery("/");
     render(<App />);
-    await user.click(screen.getByRole("button", { name: "Resume watch" }));
+    await user.click(screen.getByRole("button", { name: "Take the post" }));
     await user.click(screen.getByRole("button", { name: "Chart" }));
     expect(mapCards().filter((c) => c.disabled)).toHaveLength(0);
   });
@@ -105,7 +114,6 @@ describe("query overrides", () => {
 
     const saved = JSON.parse(localStorage.getItem("skydock-progress-v1:/")!);
     expect(saved.lastLevelId).toBe("c10-08");
-    expect(saved.unlockedChapter).toBe(10);
   });
 
   it("an unknown ?level id falls back to the normal title flow", () => {
@@ -114,13 +122,14 @@ describe("query overrides", () => {
     expect(screen.getByRole("heading", { name: "Sky Dock" })).toBeTruthy();
   });
 
-  it("?unlock=all also opens the whole glossary", async () => {
-    setQuery("/?unlock=all");
+  it("the glossary lists every entry without any query parameter", async () => {
     const user = userEvent.setup();
     render(<App />);
     await user.click(screen.getByRole("button", { name: "Take the post" }));
     await user.click(screen.getByRole("button", { name: "Glossary" }));
-    expect(screen.getByRole("status").textContent).not.toContain("sealed");
+    const count = screen.getByRole("status").textContent!;
+    expect(count).toMatch(/^22 of 22 entries$/);
+    expect(count).not.toContain("sealed");
   });
 });
 

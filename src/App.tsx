@@ -3,34 +3,20 @@ import { art } from "./assets/art";
 import { ChapterMap } from "./components/ChapterMap";
 import { PlayScreen } from "./components/PlayScreen";
 import { TitleScreen } from "./components/TitleScreen";
-import { chapters } from "./data/chapters";
 import { firstIncomplete, firstLevelOf, getLevel, levels } from "./data/levels";
 import { loadProgress, resetProgress, saveProgress } from "./store/progress";
 import type { Progress } from "./types";
 
 type Screen = "title" | "map" | "play" | "howto" | "victory";
 
-const MAX_CHAPTER = chapters.reduce((max, ch) => Math.max(max, ch.id), 1);
-
 /**
- * Query-string boot overrides, read once per page load:
- * - `?unlock=all` unseals every shift on the harbor chart (handy for reviewing any berth
- *   without replaying the campaign; it is persisted, so it survives a reload without the param,
- *   and it survives "New posting" — the param expresses explicit intent to review).
- * - `?level=<id>` jumps straight into one berth and raises the unlock to its shift so the
- *   chart and "next berth" stay coherent.
+ * Query-string boot overrides, read once per page load. Every shift and berth is always open,
+ * so the old `?unlock=all` param is accepted but no longer changes anything.
+ * `?level=<id>` jumps straight into one berth.
  */
-function bootFromQuery(): {
-  progress: Progress;
-  levelId: string | null;
-  unlockAll: boolean;
-} {
+function bootFromQuery(): { progress: Progress; levelId: string | null } {
   const params = new URLSearchParams(window.location.search);
   let progress = loadProgress();
-  const unlockAll = params.has("unlock");
-  if (unlockAll) {
-    progress = { ...progress, unlockedChapter: MAX_CHAPTER };
-  }
   let levelId: string | null = null;
   const requested = params.get("level");
   const requestedLevel = requested ? getLevel(requested) : undefined;
@@ -40,10 +26,9 @@ function bootFromQuery(): {
       ...progress,
       lastLevelId: requestedLevel.id,
       seenTitle: true,
-      unlockedChapter: Math.max(progress.unlockedChapter, requestedLevel.chapter),
     };
   }
-  return { progress, levelId, unlockAll };
+  return { progress, levelId };
 }
 
 export default function App() {
@@ -82,17 +67,12 @@ export default function App() {
         progress={progress}
         onHowTo={() => setScreen("howto")}
         onContinue={() => {
-          const next = firstIncomplete(progress.completed, progress.unlockedChapter);
+          const next = firstIncomplete(progress.completed);
           openLevel(progress.lastLevelId && getLevel(progress.lastLevelId) ? progress.lastLevelId : next.id);
         }}
         onStart={() => {
-          const fresh = resetProgress();
-          // A fresh posting clears the save, but an explicit ?unlock=all still governs the chart.
-          if (boot.unlockAll) {
-            fresh.unlockedChapter = MAX_CHAPTER;
-          }
           const next = {
-            ...fresh,
+            ...resetProgress(),
             lastLevelId: levels[0].id,
             seenTitle: true,
           };
@@ -121,6 +101,7 @@ export default function App() {
             chapterLevels.find((l) => !progress.completed.includes(l.id)) ?? first;
           openLevel(nextInChapter.id);
         }}
+        onOpenLevel={(id) => openLevel(id)}
         onDrill={() => {
           const pool = progress.completed;
           if (!pool.length) return;
@@ -175,7 +156,8 @@ function HowTo({ onBack }: { onBack: () => void }) {
           </li>
           <li>
             On a narrow screen, switch between Your dock and the Goal dock, or expand either one
-            full screen. Progress is saved in this browser; the glossary unlocks as you advance.
+            full screen. Every shift and berth stays open — the chart is a menu, not a gate — and
+            the full glossary is always available.
           </li>
         </ol>
         <p>

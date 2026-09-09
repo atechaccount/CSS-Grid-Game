@@ -116,7 +116,7 @@ Each berth: story → goal → write CSS → live preview → check → hints �
 
 Review and boss levels mix earlier tools. After eight clears, the harbor chart offers a **Rerig drill** (random previously passed level).
 
-The **Harbor glossary** (`src/data/harbor-glossary.ts`, rendered by `src/components/HarborGlossary.tsx`) is the only reference screen: searchable, unlocked by shift, one entry per term with a plain-language definition, a compact example, and when to use it. Add new terms there rather than starting a second reference.
+The **Harbor glossary** (`src/data/harbor-glossary.ts`, rendered by `src/components/HarborGlossary.tsx`) is the only reference screen: searchable, fully open, one entry per term with a plain-language definition, a compact example, and when to use it. Add new terms there rather than starting a second reference.
 
 ## Note on IP
 

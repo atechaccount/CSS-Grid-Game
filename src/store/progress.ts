@@ -15,7 +15,6 @@ function storageKey(): string {
 
 export const defaultProgress = (): Progress => ({
   completed: [],
-  unlockedChapter: 1,
   lastLevelId: null,
   drafts: {},
   hintsUsed: {},
@@ -28,7 +27,11 @@ export const defaultProgress = (): Progress => ({
 
 function parse(raw: string): Progress | null {
   try {
-    const parsed = JSON.parse(raw) as Partial<Progress>;
+    // `unlockedChapter` belonged to the old shift-sealing save format; drop it here so legacy
+    // saves are tolerated but the removed field is never re-persisted.
+    const { unlockedChapter: _legacy, ...parsed } = JSON.parse(raw) as Partial<Progress> & {
+      unlockedChapter?: number;
+    };
     return {
       ...defaultProgress(),
       ...parsed,

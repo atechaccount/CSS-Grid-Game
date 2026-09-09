@@ -9,24 +9,17 @@ function entryMatchesQuery(entry: GlossaryEntry, query: string): boolean {
 }
 
 /**
- * Harbor glossary: searchable reference for every CSS Grid term, unlocked by shift.
+ * Harbor glossary: searchable reference for every CSS Grid term. Fully open — entries are
+ * tagged with their shift for context, but nothing is gated.
  * This is the only reference screen in the game — the old cheatsheet list lives here now.
  */
-export function HarborGlossary({
-  unlockedChapter,
-  onClose,
-}: {
-  unlockedChapter: number;
-  onClose: () => void;
-}) {
+export function HarborGlossary({ onClose }: { onClose: () => void }) {
   const [query, setQuery] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
-  const unlocked = useMemo(
-    () => harborGlossary.filter((e) => e.chapter <= unlockedChapter),
-    [unlockedChapter],
+  const matches = useMemo(
+    () => harborGlossary.filter((e) => entryMatchesQuery(e, query)),
+    [query],
   );
-  const matches = useMemo(() => unlocked.filter((e) => entryMatchesQuery(e, query)), [unlocked, query]);
-  const sealed = harborGlossary.length - unlocked.length;
 
   useEffect(() => {
     searchRef.current?.focus();
@@ -56,8 +49,7 @@ export function HarborGlossary({
             onChange={(e) => setQuery(e.target.value)}
           />
           <p className="glossary-count" role="status">
-            {matches.length} of {unlocked.length} entries
-            {sealed > 0 ? ` · ${sealed} sealed until later shifts` : ""}
+            {matches.length} of {harborGlossary.length} entries
           </p>
         </div>
 

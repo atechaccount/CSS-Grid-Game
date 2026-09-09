@@ -8,10 +8,20 @@ key, the vite config cleanup, and the in-repo test suite are all landed; see Don
 ## Next
 
 Nothing queued. `TODO.md` holds the remaining ideas (storage origin, self-hosted fonts) and the
-one honest residual: the layout audit ran in an emulated browser, not on physical devices.
+one honest residual: the layout audit ran in an emulated browser, not on physical devices. The
+open-chart change postdates that audit and is covered by the vitest suite plus a browser spot
+check of the chart pills.
 
 ## Done
 
+- **Sealing removed — the campaign is a menu, not a gate.** Every shift card on the harbor
+  chart is always clickable and carries a row of numbered berth pills, so any level is one
+  click from the chart (pills show a check mark once cleared). The in-game berth dropdown
+  enables every option, "Next berth/shift" flows across shifts without checks, the glossary is
+  fully open, and `Progress.unlockedChapter` is gone (legacy saves carrying the field load
+  fine; the field is dropped on load and never re-persisted). `?unlock=all` is still accepted
+  as a no-op; `?level=<id>` deep links are unchanged. The chart card click keeps the convenient
+  default of opening the shift's next uncleared berth.
 - **Play screen verified in a real browser — the pass that was previously blocked.** The
   Playwright CDN and Debian mirrors were unreachable when this was last attempted, but the npm
   registry is not, so the audit ran on `@sparticuz/chromium` (a Chromium binary shipped as an
