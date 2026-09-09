@@ -35,6 +35,14 @@ description: Build, debug, and review the Sky Dock CSS Grid learning game. Use f
 - Check both narrow screens and short landscape or laptop screens.
 - Preserve keyboard access, visible focus, readable labels, and a reachable primary check action.
 
+## Protect the learning curve
+
+- Describe the visual outcome in objectives instead of embedding the exact CSS answer.
+- Keep first introductions explicit, then reduce scaffolding for practice, challenge, review, and boss levels.
+- Order hints from conceptual cue, to likely CSS tool, to syntax-shaped help without copying the full solution.
+- Treat the existing cheatsheet as the foundation for glossary and reference improvements; avoid parallel sources of truth.
+- Keep glossary definitions plain-language, searchable when expanded, and unlocked consistently with chapter progress.
+
 ## Verify meaningful behavior
 
 - Run `npm run build` after implementation.
