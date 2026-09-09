@@ -109,3 +109,5 @@ Review and boss levels mix earlier tools. After eight clears, the harbor chart o
 ## Note on IP
 
 Inspired by the *learning loop* of games like Grid Critters, not by their story, characters, copy, or branding.
+
+<!-- preview verification: temporary branch, do not merge -->
