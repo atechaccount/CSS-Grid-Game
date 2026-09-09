@@ -196,7 +196,8 @@ export function PlayScreen({
       </header>
 
       <aside className="play-brief">
-        <div className="brief-card">
+        {/* Keyed by berth so switching levels replays the entrance motion. */}
+        <div className="brief-card" key={`brief-${level.id}`}>
           <div className="narrator">
             <img src={narratorSrc} alt="" />
             <div>
@@ -345,7 +346,10 @@ export function PlayScreen({
           Both docks stay mounted at the same width even when only one is on screen:
           validation measures the hidden dock too, so it must be laid out, never display: none.
         */}
-        <div className={`stage-panes ${singlePane ? "is-single" : "is-both"}`}>
+        <div
+          key={`stage-${level.id}`}
+          className={`stage-panes ${singlePane ? "is-single" : "is-both"}`}
+        >
           <div
             className={`preview-slot ${singlePane && pane !== "yours" ? "is-offscreen" : ""}`}
             aria-hidden={singlePane && pane !== "yours"}

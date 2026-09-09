@@ -14,6 +14,17 @@ check of the chart pills.
 
 ## Done
 
+- **Motion layer.** A first pass of animation across the game, transform/opacity only by design:
+  layout validation reads real rectangles, so nothing animates sizes — translates shift the
+  board and its items equally and keep measurements truthful. Entrances: play/map/title screens
+  fade, the brief, editor, and docks rise in per berth (keyed by level id so switching replays
+  them), chart cards stagger in; interactions: buttons ease and acknowledge presses, chart
+  cards lift on hover, hint rungs and failure messages slide in staggered, modals fade their
+  backdrop and settle the card forward, the glossary sheet rises, the dock-compare overlay
+  fades. `prefers-reduced-motion: reduce` collapses everything to instant. Verified in a real
+  browser: entrance animates and settles to identity, checking immediately after a paste still
+  passes validation (measurements undistorted), berth switch replays the entrance, map stagger
+  delays apply, hover lift engages, reduced-motion renders fully settled.
 - **Per-shift property explanations.** Every chapter now carries a curated `properties` list
   (`PropertyNote` in `src/types.ts`): one entry per property/keyword the shift teaches, each
   with exactly one sentence on what the property does when the browser applies it — 38 notes

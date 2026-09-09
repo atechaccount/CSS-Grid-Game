@@ -1273,3 +1273,203 @@ a:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   Motion — transform/opacity only. Layout validation reads real
+   rectangles; translate shifts the board and its items equally so
+   measurements stay truthful, and nothing here animates sizes.
+   ============================================================ */
+
+:root {
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-quick: 160ms;
+  --dur-rise: 360ms;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Screen entrances */
+.play-screen,
+.map-screen {
+  animation: fade-in var(--dur-rise) var(--ease-out-soft) both;
+}
+
+/* The brief and both docks remount per berth (keyed by level id) and rise in. */
+.brief-card {
+  animation: rise-in var(--dur-rise) var(--ease-out-soft) both;
+}
+
+.editor-card {
+  animation: rise-in var(--dur-rise) var(--ease-out-soft) 70ms both;
+}
+
+.preview-card {
+  animation: rise-in var(--dur-rise) var(--ease-out-soft) both;
+}
+
+.preview-slot:nth-child(2) .preview-card {
+  animation-delay: 80ms;
+}
+
+/* Buttons: ease colors, acknowledge presses. */
+.btn-brass,
+.btn-ghost {
+  transition:
+    background-color var(--dur-quick) ease,
+    color var(--dur-quick) ease,
+    border-color var(--dur-quick) ease,
+    transform 120ms var(--ease-out-soft);
+}
+
+.btn-brass:active,
+.btn-ghost:active {
+  transform: translateY(1px);
+}
+
+/* Chart: cards arrive with a stagger, lift on hover. */
+.map-grid li {
+  animation: rise-in var(--dur-rise) var(--ease-out-soft) both;
+}
+
+.map-grid li:nth-child(2) { animation-delay: 35ms; }
+.map-grid li:nth-child(3) { animation-delay: 70ms; }
+.map-grid li:nth-child(4) { animation-delay: 105ms; }
+.map-grid li:nth-child(5) { animation-delay: 140ms; }
+.map-grid li:nth-child(6) { animation-delay: 175ms; }
+.map-grid li:nth-child(7) { animation-delay: 210ms; }
+.map-grid li:nth-child(8) { animation-delay: 245ms; }
+.map-grid li:nth-child(9) { animation-delay: 280ms; }
+.map-grid li:nth-child(10) { animation-delay: 315ms; }
+
+.map-card {
+  transition:
+    transform var(--dur-quick) var(--ease-out-soft),
+    border-color var(--dur-quick) ease,
+    box-shadow var(--dur-quick) ease;
+}
+
+.map-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 177, 90, 0.5);
+  box-shadow: 0 10px 24px rgba(4, 8, 14, 0.35);
+}
+
+.map-level,
+.map-card-open {
+  transition:
+    transform 120ms var(--ease-out-soft),
+    border-color var(--dur-quick) ease,
+    color var(--dur-quick) ease,
+    background-color var(--dur-quick) ease;
+}
+
+.map-level:hover {
+  transform: translateY(-1px);
+}
+
+.map-props summary {
+  transition: color var(--dur-quick) ease;
+}
+
+/* Hint ladder and failure messages: rungs slide in, slightly staggered. */
+.hint-list li {
+  animation: rise-in 260ms var(--ease-out-soft) both;
+}
+
+.hint-list li:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.hint-list li:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.fail-list li {
+  animation: rise-in 240ms var(--ease-out-soft) both;
+}
+
+.solution-box {
+  animation: rise-in 280ms var(--ease-out-soft) both;
+}
+
+/* Verdict and lesson modals: backdrop fades, the card settles forward. */
+.modal-backdrop {
+  animation: fade-in 200ms ease both;
+}
+
+.modal-card {
+  animation: pop-in 280ms var(--ease-out-soft) both;
+}
+
+/* Glossary sheet rises from the bottom edge. */
+.sheet-backdrop {
+  animation: fade-in 200ms ease both;
+}
+
+.sheet-panel {
+  animation: rise-in 300ms var(--ease-out-soft) both;
+}
+
+/* Full-screen dock compare: fade, then the stage settles. */
+.preview-overlay {
+  animation: fade-in 180ms ease both;
+}
+
+.preview-overlay-stage {
+  animation: rise-in 260ms var(--ease-out-soft) both;
+}
+
+/* Title and victory copy arrive once. */
+.title-copy {
+  animation: rise-in 500ms var(--ease-out-soft) both;
+}
+
+/* Pane toggles ease between states. */
+.pane-toggle button,
+.stage-tools label {
+  transition:
+    background-color var(--dur-quick) ease,
+    color var(--dur-quick) ease,
+    border-color var(--dur-quick) ease;
+}
+
+/* Everything above becomes instant for players who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
