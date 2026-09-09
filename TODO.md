@@ -4,6 +4,7 @@
 
 ### Editor and responsive play-screen pass
 
+- This task may run autonomously in Arena with no access to prior conversation; inspect the current repository, make reasonable implementation decisions, complete as much as possible end to end, and clearly report anything blocked or unfinished.
 - Preserve the existing Sky Dock art direction, story, level data, validation behavior, and saved progress.
 - Fix the production build first: `src/assets/art.ts` imports image files as local modules, but the files currently live in `public/images`.
 - Replace the custom textarea and highlight overlay with a lightweight, production-quality CSS editor, preferably CodeMirror 6.
